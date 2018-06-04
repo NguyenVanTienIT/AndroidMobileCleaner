@@ -109,15 +109,18 @@ class FragmentListContacts : Fragment() {
 
             while (cursor.moveToNext()) {
                 var idName: String = ContactsContract.Contacts.DISPLAY_NAME
+                var idContact: String = ContactsContract.Contacts._ID
                 var idPhone: String = ContactsContract.CommonDataKinds.Phone.NUMBER
 
-                var colNameIndex: Int = cursor.getColumnIndex(idName)
-                var colPhoneIndex: Int = cursor.getColumnIndex(idPhone)
+                var colNameIndex : Int = cursor.getColumnIndex(idName)
+                var colPhoneIndex : Int = cursor.getColumnIndex(idPhone)
+                var colId : Int = cursor.getColumnIndex(idContact)
 
                 var name: String = cursor.getString(colNameIndex)
                 var phone: String = cursor.getString(colPhoneIndex)
+                var id : String = cursor.getString(colId)
 
-                var contacts: Contacts = Contacts("google.com", phone, name, 1, "cityhunterconbocuoi@gmai.com")
+                var contacts: Contacts = Contacts(id,"google.com", phone, name, 1, "cityhunterconbocuoi@gmai.com")
                 list.add(contacts)
 
             }
