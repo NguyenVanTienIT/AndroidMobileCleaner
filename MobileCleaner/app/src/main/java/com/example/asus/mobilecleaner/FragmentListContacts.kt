@@ -74,11 +74,11 @@ class FragmentListContacts : Fragment() {
             var count = 0;
             for(contacts2 : Contacts in listContact!!){
                 if(contacts1.numberPhone == contacts2.numberPhone && count == 0 && contacts1.numberPhone != "-1"){
-                    count++
+                    ++ count
                 }
-                else if (contacts1.numberPhone == contacts2.numberPhone && count == 1 && contacts1.numberPhone != "-1"){
+                else if (contacts1.numberPhone == contacts2.numberPhone && count != 0 && contacts1.numberPhone != "-1"){
                     contacts2.numberPhone = "-1"
-                    count++
+                    ++ count
                     contacts1.numberCount = count
                 }
             }

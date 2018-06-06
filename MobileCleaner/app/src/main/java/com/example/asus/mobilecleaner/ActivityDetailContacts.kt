@@ -33,6 +33,7 @@ class ActivityDetailContacts : AppCompatActivity() {
 
     companion object {
         var selected : Int? = null
+        var row_index : Int = -1
     }
 
 
@@ -167,7 +168,6 @@ class ActivityDetailContacts : AppCompatActivity() {
 
         var listContactAdapter : ArrayList<Contacts>? = null
 
-
         init {
             listContactAdapter = listContacts
         }
@@ -181,12 +181,22 @@ class ActivityDetailContacts : AppCompatActivity() {
             var holder2 = holder
             holder!!.bind(contacts)
 
+            if(row_index == position){
+                holder!!.line!!.setBackgroundColor(ContextCompat.getColor(applicationContext, R.color.colorAccent))
+            }
+            else
+            {
+                holder!!.line!!.setBackgroundColor(ContextCompat.getColor(applicationContext, R.color.item))
+            }
+
             holder.line!!.setOnClickListener(object : View.OnClickListener{
                 override fun onClick(v: View?) {
-                    holder!!.line!!.setBackgroundColor(ContextCompat.getColor(applicationContext, R.color.colorAccent))
+                    row_index = position
                     idSelect = contacts.idContacts
                     phoneSelect = contacts.numberPhone
                     nameSelect = contacts.name
+                    notifyDataSetChanged()
+
                 }
             })
         }

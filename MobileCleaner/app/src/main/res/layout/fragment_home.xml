@@ -8,12 +8,12 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="220dp"
+        android:layout_height="180dp"
         android:background="#430C0C"
         >
 
         <ImageView
-            android:layout_gravity="center_horizontal|center_vertical"
+            android:layout_gravity="center_horizontal"
             android:id="@+id/img_arrow"
             android:layout_width="150sp"
             android:layout_height="150sp"
@@ -21,7 +21,7 @@
             />
 
         <ImageView
-            android:layout_gravity="center_horizontal|center_vertical"
+            android:layout_gravity="center_horizontal"
             android:id="@+id/img_bg3"
             android:layout_width="150sp"
             android:layout_height="150sp"
@@ -29,7 +29,7 @@
             />
 
         <ImageView
-            android:layout_gravity="center_horizontal|center_vertical"
+            android:layout_gravity="center_horizontal"
             android:id="@+id/img_loading3"
             android:layout_width="150sp"
             android:layout_height="150sp"
@@ -37,13 +37,15 @@
             />
 
         <TextView
+
             android:layout_marginBottom="5sp"
             android:layout_gravity="center_horizontal|bottom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/massage"
+            android:textColor="#FFF"
             android:text="Your device is not ready"
-            android:textSize="20sp"/>
+            android:textSize="18sp"/>
 
     </FrameLayout>
 
@@ -51,7 +53,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:background="#F5A9BC"
+        android:background="#B85E53"
         >
         <ImageView
             android:id="@+id/icon_notice"
@@ -64,6 +66,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="18dp"
+            android:textColor="#FFF"
             android:text="The agent status is needs attention"
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="26sp"/>
@@ -100,6 +103,7 @@
                 android:layout_marginBottom="10dp"
                 >
                 <TextView
+                    android:textColor="#FFF"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Device Analyze"
@@ -107,6 +111,7 @@
                     />
 
                 <TextView
+                    android:textColor="#37D444"
                     android:id="@+id/status_analyze"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -145,6 +150,7 @@
                 android:layout_marginBottom="10dp"
                 >
                 <TextView
+                    android:textColor="#FFF"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Quick Contacts Scan"
@@ -152,6 +158,7 @@
                     />
 
                 <TextView
+                    android:textColor="#37D444"
                     android:id="@+id/status_quick"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -191,6 +198,7 @@
                 android:layout_marginBottom="10dp"
                 >
                 <TextView
+                    android:textColor="#FFF"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Full Contacts Scan"
@@ -198,6 +206,7 @@
                     />
 
                 <TextView
+                    android:textColor="#CD3C3D"
                     android:id="@+id/status_fullScan"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -237,6 +246,7 @@
                 android:layout_marginBottom="10dp"
                 >
                 <TextView
+                    android:textColor="#FFF"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Secure Internet"
@@ -244,6 +254,7 @@
                     />
 
                 <TextView
+                    android:textColor="#D1BE3C"
                     android:id="@+id/status_secure"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -253,6 +264,7 @@
         </LinearLayout>
 
         <View
+
             android:background="#FFF"
             android:layout_width="match_parent"
             android:layout_height="1dp"/>
