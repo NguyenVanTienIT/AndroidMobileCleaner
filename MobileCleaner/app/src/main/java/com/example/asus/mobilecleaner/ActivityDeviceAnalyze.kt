@@ -138,8 +138,8 @@ class ActivityDeviceAnalyze : AppCompatActivity() {
 
         var yValues : ArrayList<PieEntry> = ArrayList<PieEntry>()
 
-        yValues.add(PieEntry(usedMemory.toFloat(), "Free disk"))
-        yValues.add(PieEntry(freeMemory.toFloat(), "Used disk"))
+        yValues.add(PieEntry(usedMemory.toFloat(), "Used disk"))
+        yValues.add(PieEntry(freeMemory.toFloat(), "Free disk"))
 
 
         var dataSet : PieDataSet = PieDataSet(yValues, "Country")
@@ -180,8 +180,8 @@ class ActivityDeviceAnalyze : AppCompatActivity() {
 
         var yValues : ArrayList<PieEntry> = ArrayList<PieEntry>()
 
-        yValues.add(PieEntry(use.toFloat(), "Free disk"))
-        yValues.add(PieEntry(free.toFloat(), "Used disk"))
+        yValues.add(PieEntry(use.toFloat(), "Used disk"))
+        yValues.add(PieEntry(free.toFloat(), "Free disk"))
 
 
         var dataSet : PieDataSet = PieDataSet(yValues, "Country")

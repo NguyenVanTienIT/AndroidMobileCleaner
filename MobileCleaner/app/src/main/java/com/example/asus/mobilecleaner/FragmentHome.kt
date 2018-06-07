@@ -10,14 +10,20 @@ import android.support.v4.app.FragmentTransaction
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 
-class FragmentHome : Fragment() {
-   //private var fragmentManager : FragmentManager? = null
+class FragmentHome : Fragment(), Animation.AnimationListener {
+
+
+    //private var fragmentManager : FragmentManager? = null
     private var transaction :  FragmentTransaction? = null
+    var animation: Animation? = null
+    var animation2: Animation? = null
 
     var imgLoad : ImageView? = null
     var imgArroud : ImageView? = null
@@ -53,9 +59,9 @@ class FragmentHome : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        /*imgArroud = view.findViewById(R.id.img_arrow)
+        imgArroud = view.findViewById(R.id.img_arrow)
         imgLoad = view.findViewById(R.id.img_loading3)
-        imgbackgroud = view.findViewById(R.id.img_bg3)*/
+        imgbackgroud = view.findViewById(R.id.img_bg3)
 
         textMassage = view.findViewById(R.id.massage)
         textNotice = view.findViewById(R.id.notice)
@@ -80,6 +86,15 @@ class FragmentHome : Fragment() {
         itemScan = view.findViewById(R.id.quickScan)
         itemFullScan = view.findViewById(R.id.fullScan)
         itemSecure = view.findViewById(R.id.secure)
+
+        animation = AnimationUtils.loadAnimation(activity, R.anim.rotate);
+        animation2 = AnimationUtils.loadAnimation(activity, R.anim.rotate2);
+       // animation!!.setAnimationListener(context);
+        imgLoad!!.setVisibility(View.VISIBLE);
+        imgLoad!!.startAnimation(animation);
+
+        imgArroud!!.setVisibility(View.VISIBLE);
+        imgArroud!!.startAnimation(animation2);
 
         itemAnalyze!!.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
@@ -117,6 +132,18 @@ class FragmentHome : Fragment() {
         })
     }
 
+
+    override fun onAnimationRepeat(animation: Animation?) {
+
+    }
+
+    override fun onAnimationEnd(animation: Animation?) {
+
+    }
+
+    override fun onAnimationStart(animation: Animation?) {
+
+    }
 
   /*  fun getRamSize() : Double{
         val actManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
