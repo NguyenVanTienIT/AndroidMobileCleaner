@@ -19,11 +19,13 @@ import android.widget.Toast
 import android.widget.ArrayAdapter
 import android.Manifest.permission
 import android.Manifest.permission.READ_CONTACTS
+import android.content.ContentUris
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
+import android.support.v7.widget.DividerItemDecoration
 
 
 class FragmentListContacts : Fragment() {
@@ -39,6 +41,12 @@ class FragmentListContacts : Fragment() {
         recyclerView = view.findViewById(R.id.list_contacts)
 
         recyclerView?.layoutManager = LinearLayoutManager(getActivity())
+
+
+        val itemDecoration = DividerItemDecoration(activity, LinearLayoutManager(getActivity()).orientation)
+        recyclerView!!.setHasFixedSize(true)
+        recyclerView!!.setLayoutManager(LinearLayoutManager(getActivity()))
+        recyclerView!!.addItemDecoration(itemDecoration)
 
         listContact = ArrayList()
 
@@ -120,7 +128,19 @@ class FragmentListContacts : Fragment() {
                 var phone: String = cursor.getString(colPhoneIndex)
                 var id : String = cursor.getString(colId)
 
-                var contacts: Contacts = Contacts(id,"google.com", phone, name, 1, "cityhunterconbocuoi@gmai.com")
+                val photoId = cursor.getLong(cursor.getColumnIndex(ContactsContract.Data.PHOTO_ID))
+                val contactId : Long = cursor.position.toLong()
+
+                var src : Uri? = null
+
+                if (photoId != 0L) {
+                    val contactUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contactId)
+                    val photUri = Uri.withAppendedPath(contactUri, ContactsContract.Contacts.Photo.CONTENT_DIRECTORY)
+                    src  = photUri
+                } else  src = null
+
+                var contacts: Contacts = Contacts(id,src, phone, name, 1, null)
+
                 list.add(contacts)
 
             }
@@ -160,7 +180,11 @@ class FragmentListContacts : Fragment() {
 
             sdtContacts!!.setText(contacts.numberPhone.toString())
             countContact!!.setText(contacts.numberCount!!.toString())
-            imageContact!!.setImageResource(R.drawable.ic_contact)
+
+            if(contacts.srcImg != null){
+                imageContact!!.setImageURI(contacts.srcImg)
+            }
+            else  imageContact!!.setImageResource(R.drawable.facebook_avatar)
         }
 
         override fun onClick(v: View?) {

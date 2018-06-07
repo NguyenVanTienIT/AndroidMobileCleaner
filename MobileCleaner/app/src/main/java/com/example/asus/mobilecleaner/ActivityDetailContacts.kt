@@ -1,8 +1,7 @@
 package com.example.asus.mobilecleaner
 
 import android.app.PendingIntent.getActivity
-import android.content.Context
-import android.content.Intent
+import android.content.*
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -16,24 +15,28 @@ import android.view.ViewGroup
 import java.nio.file.Files.delete
 import android.provider.ContactsContract.PhoneLookup
 import java.nio.file.Files.delete
-import android.content.ContentResolver
+import android.support.v7.widget.DividerItemDecoration
 import android.widget.*
+import java.nio.file.Files.delete
+import android.text.method.TextKeyListener.clear
+import android.os.RemoteException
+import android.support.v7.app.AlertDialog
 
 
 class ActivityDetailContacts : AppCompatActivity() {
 
 
-    var btnDelete : Button? = null
-    var recyclerView : RecyclerView? = null
-    var listContact : ArrayList<Contacts>? = null
-    var adapterDetailContacts : ContactDetailAdapter? = null
-    var idSelect : String? = null
-    var phoneSelect : String? = null
-    var nameSelect : String? = null
+    var btnDelete: Button? = null
+    var recyclerView: RecyclerView? = null
+    var listContact: ArrayList<Contacts>? = null
+    var adapterDetailContacts: ContactDetailAdapter? = null
+    var idSelect: String? = null
+    var phoneSelect: String? = null
+    var nameSelect: String? = null
 
     companion object {
-        var selected : Int? = null
-        var row_index : Int = -1
+        var selected: Int? = null
+        var row_index: Int = -1
     }
 
 
@@ -48,20 +51,27 @@ class ActivityDetailContacts : AppCompatActivity() {
         layoutManager.orientation = LinearLayoutManager.VERTICAL
         recyclerView?.layoutManager = layoutManager
 
-        var intent : Intent = getIntent()
-        var nd : String = intent.getStringExtra("contacts")
+
+        val itemDecoration = DividerItemDecoration(this, layoutManager.orientation)
+        recyclerView!!.setHasFixedSize(true)
+        recyclerView!!.setLayoutManager(layoutManager)
+        recyclerView!!.addItemDecoration(itemDecoration)
+
+        var intent: Intent = getIntent()
+        var nd: String = intent.getStringExtra("contacts")
 
         updateUI(nd)
 
-        btnDelete!!.setOnClickListener(object : View.OnClickListener{
+        btnDelete!!.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
-                if(idSelect != null && phoneSelect != null) {
+                if (idSelect != null && phoneSelect != null) {
                     deleteContact(applicationContext, phoneSelect!!, nameSelect!!,idSelect!!)
+                    //deleteContact(applicationContext, idSelect!!)
                     idSelect = null
                     phoneSelect = null
                     nameSelect = null
-                }
-                else {
+                    updateUI(nd)
+                } else {
                     Toast.makeText(applicationContext, "Please choose 1 contacts", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -70,33 +80,27 @@ class ActivityDetailContacts : AppCompatActivity() {
     }
 
 
-
-
-
-    private fun updateUI(c : String)
-    {
+    private fun updateUI(c: String) {
         // set Adapter cho recyclerview
         listContact = getContactList()
-        var listTam : ArrayList<Contacts> = ArrayList()
+        var listTam: ArrayList<Contacts> = ArrayList()
 
-        for(contacts1 : Contacts in listContact!!){
-            if(contacts1.numberPhone == c){
+        for (contacts1: Contacts in listContact!!) {
+            if (contacts1.numberPhone == c) {
                 listTam.add(contacts1)
             }
         }
-        if(adapterDetailContacts == null) {
+        if (adapterDetailContacts == null) {
             adapterDetailContacts = ContactDetailAdapter(listTam!!)
             recyclerView!!.adapter = adapterDetailContacts
-        }
-
-        else{
+        } else {
             adapterDetailContacts!!.notifyDataSetChanged()
         }
     }
 
 
-    private fun getContactList() : ArrayList<Contacts>{
-        var list : ArrayList<Contacts> = ArrayList()
+    private fun getContactList(): ArrayList<Contacts> {
+        var list: ArrayList<Contacts> = ArrayList()
 
         var uriContacts: Uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI
         var cursor = applicationContext!!.contentResolver.query(uriContacts, null, null, null, null)
@@ -106,15 +110,27 @@ class ActivityDetailContacts : AppCompatActivity() {
             var idContact: String = ContactsContract.Contacts._ID
             var idPhone: String = ContactsContract.CommonDataKinds.Phone.NUMBER
 
-            var colNameIndex : Int = cursor.getColumnIndex(idName)
-            var colPhoneIndex : Int = cursor.getColumnIndex(idPhone)
-            var colId : Int = cursor.getColumnIndex(idContact)
+            var colNameIndex: Int = cursor.getColumnIndex(idName)
+            var colPhoneIndex: Int = cursor.getColumnIndex(idPhone)
+            var colId: Int = cursor.getColumnIndex(idContact)
 
             var name: String = cursor.getString(colNameIndex)
             var phone: String = cursor.getString(colPhoneIndex)
-            var id : String = cursor.getString(colId)
+            var id: String = cursor.getString(colId)
 
-            var contacts: Contacts = Contacts(id,"google.com", phone, name, 1, "cityhunterconbocuoi@gmai.com")
+            val photoId = cursor.getLong(cursor.getColumnIndex(ContactsContract.Data.PHOTO_ID))
+            val contactId : Long = cursor.position.toLong()
+
+            var src : Uri? = null
+
+            if (photoId != 0L) {
+                val contactUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contactId)
+                val photUri = Uri.withAppendedPath(contactUri, ContactsContract.Contacts.Photo
+                        .CONTENT_DIRECTORY)
+                src  = photUri
+            } else  src = null
+
+            var contacts: Contacts = Contacts(id, src, phone, name, 1, null)
             list.add(contacts)
 
         }
@@ -124,23 +140,23 @@ class ActivityDetailContacts : AppCompatActivity() {
         return list
     }
 
-    inner class ContactDetailHolder(inflater : LayoutInflater, parent : ViewGroup) :
-            RecyclerView.ViewHolder(inflater.inflate(R.layout.item_detail_contacts,parent,false)),
-            View.OnClickListener{
+    inner class ContactDetailHolder(inflater: LayoutInflater, parent: ViewGroup) :
+            RecyclerView.ViewHolder(inflater.inflate(R.layout.item_detail_contacts, parent, false)),
+            View.OnClickListener {
 
-        var imgDetail : ImageView? = null
-        var sdtDetail :  TextView? = null
-        var nameDetail : TextView? = null
-        var emailDetail : TextView? = null
-        var id : TextView? = null
-        var line : LinearLayout? = null
+        var imgDetail: ImageView? = null
+        var sdtDetail: TextView? = null
+        var nameDetail: TextView? = null
+        var emailDetail: TextView? = null
+        var id: TextView? = null
+        var line: LinearLayout? = null
 
-        var newContact : Contacts? = null
+        var newContact: Contacts? = null
 
         init {
             imgDetail = itemView.findViewById(R.id.img_detail)
             sdtDetail = itemView.findViewById(R.id.numberContacts)
-            nameDetail =  itemView.findViewById(R.id.nameContacts)
+            nameDetail = itemView.findViewById(R.id.nameContacts)
             emailDetail = itemView.findViewById(R.id.emailContacts)
             id = itemView.findViewById(R.id.id_contacts)
             line = itemView.findViewById(R.id.line)
@@ -148,12 +164,17 @@ class ActivityDetailContacts : AppCompatActivity() {
         }
 
 
-
-        fun bind(contacts : Contacts){
+        fun bind(contacts: Contacts) {
             newContact = contacts
             sdtDetail!!.setText(contacts.numberPhone)
             nameDetail!!.setText(contacts.name)
-            imgDetail!!.setImageResource(R.drawable.ic_contact)
+
+            if(contacts.srcImg != null){
+                imgDetail!!.setImageURI(contacts.srcImg)
+            }
+            else  imgDetail!!.setImageResource(R.drawable.facebook_avatar)
+
+            //imgDetail!!.setImageResource(R.drawable.ic_contact)
             emailDetail!!.setText(contacts.email)
             id!!.setText(contacts.idContacts)
         }
@@ -164,9 +185,9 @@ class ActivityDetailContacts : AppCompatActivity() {
 
     }
 
-    inner class ContactDetailAdapter(listContacts : ArrayList<Contacts>) : RecyclerView.Adapter<ContactDetailHolder>(){
+    inner class ContactDetailAdapter(listContacts: ArrayList<Contacts>) : RecyclerView.Adapter<ContactDetailHolder>() {
 
-        var listContactAdapter : ArrayList<Contacts>? = null
+        var listContactAdapter: ArrayList<Contacts>? = null
 
         init {
             listContactAdapter = listContacts
@@ -177,19 +198,17 @@ class ActivityDetailContacts : AppCompatActivity() {
         }
 
         override fun onBindViewHolder(holder: ContactDetailHolder, position: Int) {
-            var contacts : Contacts = listContactAdapter!![position]
+            var contacts: Contacts = listContactAdapter!![position]
             var holder2 = holder
             holder!!.bind(contacts)
 
-            if(row_index == position){
+            if (row_index == position) {
                 holder!!.line!!.setBackgroundColor(ContextCompat.getColor(applicationContext, R.color.colorAccent))
-            }
-            else
-            {
+            } else {
                 holder!!.line!!.setBackgroundColor(ContextCompat.getColor(applicationContext, R.color.item))
             }
 
-            holder.line!!.setOnClickListener(object : View.OnClickListener{
+            holder.line!!.setOnClickListener(object : View.OnClickListener {
                 override fun onClick(v: View?) {
                     row_index = position
                     idSelect = contacts.idContacts
@@ -201,14 +220,14 @@ class ActivityDetailContacts : AppCompatActivity() {
             })
         }
 
-        fun onSelectedItem(holder: ContactDetailHolder, index : Int){
+        /* fun onSelectedItem(holder: ContactDetailHolder, index : Int){
             var contacts : Contacts = listContactAdapter!![index]
             holder!!.bind(contacts)
             holder!!.line!!.setBackgroundColor(ContextCompat.getColor(applicationContext, R.color.item))
-        }
+        }*/
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ContactDetailHolder {
-            var layoutInflater : LayoutInflater = LayoutInflater.from(applicationContext)
+            var layoutInflater: LayoutInflater = LayoutInflater.from(applicationContext)
 
             return ContactDetailHolder(layoutInflater, parent)
         }
@@ -216,28 +235,41 @@ class ActivityDetailContacts : AppCompatActivity() {
     }
 
 
-    fun deleteContact(ctx: Context, phone: String, name: String, id : String): Boolean {   // xóa đi 1 số liên lạc với tên bất kỳ
+    fun deleteContact(ctx: Context, phone: String, name: String, id: String): Boolean {   // xóa đi 1 số liên lạc với tên bất kỳ
         val contactUri = Uri.withAppendedPath(PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phone))
+        //val contactUri = Uri.withAppendedPath(PhoneLookup.CONTENT_FILTER_URI, Uri.encode(id))
         val cur = ctx.contentResolver.query(contactUri, null, null, null, null)
-        try {
+
+
+        //try {
             if (cur!!.moveToFirst()) {
                 do {
-                    if (cur.getString(cur.getColumnIndex(PhoneLookup.DISPLAY_NAME)).equals(name)) {
+                    if (cur.getString(cur.getColumnIndex(PhoneLookup.DISPLAY_NAME)).equals(name)  && cur.getString(cur.getColumnIndex(ContactsContract.Data.CONTACT_ID)).equals(id)) {
                         val lookupKey = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY))
                         val uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, lookupKey)
                         ctx.contentResolver.delete(uri, null, null)
+                        Toast.makeText(applicationContext, "Đã xóa được", Toast.LENGTH_SHORT).show()
                         return true
+                    } else {
+                        Toast.makeText(applicationContext, "Đéo xóa được ", Toast.LENGTH_SHORT).show()
                     }
 
                 } while (cur.moveToNext())
+            } else {
+                Toast.makeText(applicationContext, "chưa vào được đây đâu bạn ơi  ", Toast.LENGTH_SHORT).show()
             }
 
-        } catch (e: Exception) {
+       /* } catch (e: Exception) {
             println(e.stackTrace)
-        } finally {
-            cur!!.close()
-        }
+            Toast.makeText(applicationContext, "chưa vào được đây đâu bạn ơi  ", Toast.LENGTH_SHORT).show()
+        }*/
+        //finally {
+        cur!!.close()
+        //}
         return false
     }
 
 }
+
+
+

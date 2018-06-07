@@ -111,6 +111,8 @@ class FragmentHome : Fragment() {
         itemSecure!!.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
                 Toast.makeText(activity, "Securing", Toast.LENGTH_SHORT).show()
+                var intent2 : Intent = Intent(activity, ActivityVPN::class.java)
+                startActivity(intent2)
             }
         })
     }
