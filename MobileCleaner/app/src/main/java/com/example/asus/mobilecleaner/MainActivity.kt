@@ -6,20 +6,23 @@ import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
-import android.view.Menu
-import android.view.MenuItem
+import android.view.*
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import android.view.View.SYSTEM_UI_FLAG_FULLSCREEN
+
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        //setSupportActionBar(toolbar)
+        requestWindowFeature(Window.FEATURE_NO_TITLE)
+        window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
 
-       // toolbar.title = ""
+        setContentView(R.layout.activity_main)
+
+
         supportFragmentManager.beginTransaction().add(R.id.container_home, FragmentHome()).commit()
 
         /*val toggle = ActionBarDrawerToggle(this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)

@@ -14,24 +14,30 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 
-class ActivityContactsScan : AppCompatActivity() {
+class ActivityContactsScan : AbsRuntimePermission() {
+
 
 
     var listRecycler : RecyclerView? = null
     var adapter : ContactAdapter? = null
     var listContact :  ArrayList<Contacts>? = null
     //var btnDelete : Button?= null
+    companion object {
+        private val REQUEST_PERMISSION = 10
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        requestWindowFeature(Window.FEATURE_NO_TITLE)
+        window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
         setContentView(R.layout.activity_contacts_scan)
 
         listRecycler = findViewById(R.id.list_contacts)
@@ -44,7 +50,14 @@ class ActivityContactsScan : AppCompatActivity() {
         listRecycler!!.addItemDecoration(itemDecoration)
 
         listContact = ArrayList()
-        checkAndRequestPermissions()
+
+       /* requestAppPermissions(arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.WRITE_CONTACTS),
+                R.string.msg, REQUEST_PERMISSION)*/
+        requestAppPermissions(arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS),
+                R.string.msg, REQUEST_PERMISSION)
+
+        // thực hiện cấp quyền
+        //checkAndRequestPermissions()
         updateUI()
 
 
@@ -58,7 +71,12 @@ class ActivityContactsScan : AppCompatActivity() {
 
     }
 
-    private fun checkAndRequestPermissions() {
+    override fun onPermissionsGranted(requestCode: Int) {
+        Toast.makeText(applicationContext, "Permission granted", Toast.LENGTH_LONG).show()
+    }
+
+   /* private fun checkAndRequestPermissions() {
+
         val permissions = arrayOf(Manifest.permission.READ_CONTACTS)
         val listPermissionsNeeded = java.util.ArrayList<String>()
         for (permission in permissions) {
@@ -69,7 +87,8 @@ class ActivityContactsScan : AppCompatActivity() {
         if (!listPermissionsNeeded.isEmpty()) {
             ActivityCompat.requestPermissions((applicationContext as Activity?)!!, listPermissionsNeeded.toTypedArray(), 1)
         }
-    }
+        Toast.makeText(applicationContext, "Thưc hiện cấp quyền", Toast.LENGTH_SHORT).show()
+    }*/
 
     private fun updateUI()
     {
@@ -107,7 +126,7 @@ class ActivityContactsScan : AppCompatActivity() {
 
 
 
-    private fun getContactList() : ArrayList<Contacts>{
+    private fun getContactList() : ArrayList<Contacts>?{
         var list : ArrayList<Contacts> = ArrayList()
 
     try {
@@ -116,7 +135,7 @@ class ActivityContactsScan : AppCompatActivity() {
 
         while (cursor.moveToNext()) {
             var idName: String = ContactsContract.Contacts.DISPLAY_NAME
-            var idContact: String = ContactsContract.Contacts._ID
+            var idContact: String = ContactsContract.Data._ID
             var idPhone: String = ContactsContract.CommonDataKinds.Phone.NUMBER
 
             var colNameIndex: Int = cursor.getColumnIndex(idName)
@@ -143,9 +162,10 @@ class ActivityContactsScan : AppCompatActivity() {
             list.add(contacts)
 
         }
-
         cursor.close()
-    }catch (e : Exception){
+    }
+    catch (e : Exception)
+    {
         Toast.makeText(applicationContext, "You should allow to acess  adress book",Toast.LENGTH_SHORT).show()
     }
 
@@ -184,7 +204,7 @@ class ActivityContactsScan : AppCompatActivity() {
             if(contacts.srcImg != null){
                 imageContact!!.setImageURI(contacts.srcImg)
             }
-            else  imageContact!!.setImageResource(R.drawable.facebook_avatar)
+            else  imageContact!!.setImageResource(R.drawable.user)
         }
 
         override fun onClick(v: View?) {

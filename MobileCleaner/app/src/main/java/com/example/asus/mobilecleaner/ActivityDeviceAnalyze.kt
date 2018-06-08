@@ -12,6 +12,8 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.util.Log
+import android.view.Window
+import android.view.WindowManager
 import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.data.Entry
@@ -60,6 +62,9 @@ class ActivityDeviceAnalyze : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        requestWindowFeature(Window.FEATURE_NO_TITLE)
+        window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
         setContentView(R.layout.activity_device_analyze)
 
         btnMemory = findViewById(R.id.memory)

@@ -9,9 +9,6 @@ import android.provider.ContactsContract
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import java.nio.file.Files.delete
 import android.provider.ContactsContract.PhoneLookup
 import java.nio.file.Files.delete
@@ -21,6 +18,8 @@ import java.nio.file.Files.delete
 import android.text.method.TextKeyListener.clear
 import android.os.RemoteException
 import android.support.v7.app.AlertDialog
+import android.util.Log
+import android.view.*
 
 
 class ActivityDetailContacts : AppCompatActivity() {
@@ -37,11 +36,15 @@ class ActivityDetailContacts : AppCompatActivity() {
     companion object {
         var selected: Int? = null
         var row_index: Int = -1
+        var listTam: ArrayList<Contacts>? = null
     }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        requestWindowFeature(Window.FEATURE_NO_TITLE)
+        window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
         setContentView(R.layout.activity_detail_contacts)
 
         btnDelete = findViewById(R.id.btn_delete)
@@ -50,6 +53,8 @@ class ActivityDetailContacts : AppCompatActivity() {
         val layoutManager = LinearLayoutManager(applicationContext)
         layoutManager.orientation = LinearLayoutManager.VERTICAL
         recyclerView?.layoutManager = layoutManager
+
+        listTam = ArrayList()
 
 
         val itemDecoration = DividerItemDecoration(this, layoutManager.orientation)
@@ -66,11 +71,13 @@ class ActivityDetailContacts : AppCompatActivity() {
             override fun onClick(v: View?) {
                 if (idSelect != null && phoneSelect != null) {
                     deleteContact(applicationContext, phoneSelect!!, nameSelect!!,idSelect!!)
+                    deleteContactsInList(idSelect!!)
                     //deleteContact(applicationContext, idSelect!!)
                     idSelect = null
                     phoneSelect = null
                     nameSelect = null
-                    updateUI(nd)
+
+                    //updateUI(nd)
                 } else {
                     Toast.makeText(applicationContext, "Please choose 1 contacts", Toast.LENGTH_SHORT).show()
                 }
@@ -80,20 +87,30 @@ class ActivityDetailContacts : AppCompatActivity() {
     }
 
 
+    fun deleteContactsInList(id : String){
+        for(i in 0..listTam!!.size - 1){
+            if(listTam!!.get(i).idContacts.equals(id)){
+                listTam!!.removeAt(i)
+                break;
+            }
+        }
+        adapterDetailContacts!!.notifyDataSetChanged()
+    }
+
     private fun updateUI(c: String) {
         // set Adapter cho recyclerview
         listContact = getContactList()
-        var listTam: ArrayList<Contacts> = ArrayList()
 
         for (contacts1: Contacts in listContact!!) {
             if (contacts1.numberPhone == c) {
-                listTam.add(contacts1)
+                listTam?.add(contacts1)
             }
         }
         if (adapterDetailContacts == null) {
             adapterDetailContacts = ContactDetailAdapter(listTam!!)
             recyclerView!!.adapter = adapterDetailContacts
-        } else {
+        }
+        else {
             adapterDetailContacts!!.notifyDataSetChanged()
         }
     }
@@ -172,7 +189,7 @@ class ActivityDetailContacts : AppCompatActivity() {
             if(contacts.srcImg != null){
                 imgDetail!!.setImageURI(contacts.srcImg)
             }
-            else  imgDetail!!.setImageResource(R.drawable.facebook_avatar)
+            else  imgDetail!!.setImageResource(R.drawable.user)
 
             //imgDetail!!.setImageResource(R.drawable.ic_contact)
             emailDetail!!.setText(contacts.email)
@@ -215,7 +232,6 @@ class ActivityDetailContacts : AppCompatActivity() {
                     phoneSelect = contacts.numberPhone
                     nameSelect = contacts.name
                     notifyDataSetChanged()
-
                 }
             })
         }
@@ -236,28 +252,29 @@ class ActivityDetailContacts : AppCompatActivity() {
 
 
     fun deleteContact(ctx: Context, phone: String, name: String, id: String): Boolean {   // xóa đi 1 số liên lạc với tên bất kỳ
-        val contactUri = Uri.withAppendedPath(PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phone))
-        //val contactUri = Uri.withAppendedPath(PhoneLookup.CONTENT_FILTER_URI, Uri.encode(id))
+        val contactUri = Uri.withAppendedPath(PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phone))   // sử dụng cho viecj tìm kiếm số điên thoại
         val cur = ctx.contentResolver.query(contactUri, null, null, null, null)
-
+        var value : Array<String> = arrayOf(id)
 
         //try {
-            if (cur!!.moveToFirst()) {
-                do {
-                    if (cur.getString(cur.getColumnIndex(PhoneLookup.DISPLAY_NAME)).equals(name)  && cur.getString(cur.getColumnIndex(ContactsContract.Data.CONTACT_ID)).equals(id)) {
-                        val lookupKey = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY))
-                        val uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, lookupKey)
-                        ctx.contentResolver.delete(uri, null, null)
-                        Toast.makeText(applicationContext, "Đã xóa được", Toast.LENGTH_SHORT).show()
-                        return true
-                    } else {
-                        Toast.makeText(applicationContext, "Đéo xóa được ", Toast.LENGTH_SHORT).show()
-                    }
 
-                } while (cur.moveToNext())
-            } else {
-                Toast.makeText(applicationContext, "chưa vào được đây đâu bạn ơi  ", Toast.LENGTH_SHORT).show()
-            }
+                while (cur.moveToNext()) {
+                    if (cur.getString(cur.getColumnIndex(PhoneLookup.DATA_ID)).equals(id)  ) {
+
+                        //if (cur.getString(cur.getColumnIndex(ContactsContract.Contacts._ID)) == id) {
+                            val lookupKey = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY))
+                            val uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, lookupKey)
+                            ctx.contentResolver.delete(uri, cur.getString(cur.getColumnIndex(PhoneLookup.DATA_ID))+" =? ", value)
+                             //ctx.contentResolver.delete(uri, null, null)
+                            //Toast.makeText(applicationContext, "Đã xóa được " + cur.getString(cur.getColumnIndex(PhoneLookup.DATA_ID)) + " = " + value[0].toString(), Toast.LENGTH_SHORT).show()
+                            //Log.d("id",cur.getString(cur.getColumnIndex(PhoneLookup.CONTACT_ID)))
+                            return true
+                       // }
+                    }
+                }
+
+
+
 
        /* } catch (e: Exception) {
             println(e.stackTrace)
@@ -268,6 +285,19 @@ class ActivityDetailContacts : AppCompatActivity() {
         //}
         return false
     }
+
+    fun remove(id : String, contactNumber : String){
+        val projection = arrayOf(ContactsContract.CommonDataKinds.Phone._ID, ContactsContract.CommonDataKinds.Phone.CONTACT_ID)
+        val contactUri = Uri.withAppendedPath(ContactsContract.CommonDataKinds.Phone.CONTENT_FILTER_URI, Uri.encode(contactNumber))
+        val c = applicationContext.getContentResolver().query(contactUri, projection, null, null, null)
+        while (c.moveToFirst()) {
+            if(c.getInt(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID)).toString() == id){
+
+            }
+        }
+    }
+
+
 
 }
 
