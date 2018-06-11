@@ -17,6 +17,7 @@ import android.widget.*
 import java.nio.file.Files.delete
 import android.text.method.TextKeyListener.clear
 import android.os.RemoteException
+import android.provider.CallLog
 import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.view.*
@@ -259,19 +260,35 @@ class ActivityDetailContacts : AppCompatActivity() {
         //try {
 
                 while (cur.moveToNext()) {
-                    if (cur.getString(cur.getColumnIndex(PhoneLookup.DATA_ID)).equals(id)  ) {
+                    if (cur.getString(cur.getColumnIndex(PhoneLookup.DISPLAY_NAME)).equals(name)) {
 
-                        //if (cur.getString(cur.getColumnIndex(ContactsContract.Contacts._ID)) == id) {
+                        if(cur.getString(cur.getColumnIndex(PhoneLookup.DATA_ID)).equals(id)) {
+                            //val lookupKey = cur.getString(cur.getColumnIndex(PhoneLookup.DATA_ID))
                             val lookupKey = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY))
+                           // val uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, lookupKey)
                             val uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, lookupKey)
-                            ctx.contentResolver.delete(uri, cur.getString(cur.getColumnIndex(PhoneLookup.DATA_ID))+" =? ", value)
-                             //ctx.contentResolver.delete(uri, null, null)
-                            //Toast.makeText(applicationContext, "Đã xóa được " + cur.getString(cur.getColumnIndex(PhoneLookup.DATA_ID)) + " = " + value[0].toString(), Toast.LENGTH_SHORT).show()
+                             ctx.contentResolver.delete(uri, cur.getString(cur.getColumnIndex(PhoneLookup.DATA_ID)) + "=?", value)
+                            //ctx.contentResolver.delete(uri, null, null)
+                            Toast.makeText(applicationContext, "Đã xóa được " + lookupKey + " = " + value[0].toString(), Toast.LENGTH_SHORT).show()
+
+
                             //Log.d("id",cur.getString(cur.getColumnIndex(PhoneLookup.CONTACT_ID)))
                             return true
-                       // }
+
+                        }
+
+                        /* if (cur.getString(cur.getColumnIndex(PhoneLookup.DISPLAY_NAME)).equals(name)) {
+                        val lookupKey = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY))
+                        val uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, lookupKey)
+                        //val uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, id)
+                        ctx.contentResolver.delete(uri, cur.getString(cur.getColumnIndex(PhoneLookup.DISPLAY_NAME)) + "=", value)
+                        Toast.makeText(applicationContext, "Đã xóa được " + cur.getString(cur.getColumnIndex(PhoneLookup.DISPLAY_NAME)) + " = " + value[0].toString(), Toast.LENGTH_SHORT).show()
+
+                        return true
+                    }*/
                     }
                 }
+
 
 
 

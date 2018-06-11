@@ -53,6 +53,7 @@ class ActivityContactsScan : AbsRuntimePermission() {
 
        /* requestAppPermissions(arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.WRITE_CONTACTS),
                 R.string.msg, REQUEST_PERMISSION)*/
+
         requestAppPermissions(arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS),
                 R.string.msg, REQUEST_PERMISSION)
 
@@ -135,8 +136,12 @@ class ActivityContactsScan : AbsRuntimePermission() {
 
         while (cursor.moveToNext()) {
             var idName: String = ContactsContract.Contacts.DISPLAY_NAME
-            var idContact: String = ContactsContract.Data._ID
+            //var idContact: String = ContactsContract.Data._ID
+            var idContact: String = ContactsContract.Contacts._ID
             var idPhone: String = ContactsContract.CommonDataKinds.Phone.NUMBER
+
+
+
 
             var colNameIndex: Int = cursor.getColumnIndex(idName)
             var colPhoneIndex: Int = cursor.getColumnIndex(idPhone)
@@ -148,6 +153,12 @@ class ActivityContactsScan : AbsRuntimePermission() {
 
             val photoId = cursor.getLong(cursor.getColumnIndex(ContactsContract.Data.PHOTO_ID))
             val contactId: Long = cursor.position.toLong()
+
+            /*val emailCur = contentResolver.query(ContactsContract.CommonDataKinds.Email.CONTENT_URI, null, ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = ?", arrayOf(id), null)
+            emailCur.moveToNext()
+            val email = emailCur.getString(emailCur.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA))
+            emailCur.close();*/
+
 
             var src: Uri? = null
 
@@ -164,9 +175,10 @@ class ActivityContactsScan : AbsRuntimePermission() {
         }
         cursor.close()
     }
+
     catch (e : Exception)
     {
-        Toast.makeText(applicationContext, "You should allow to acess  adress book",Toast.LENGTH_SHORT).show()
+        Toast.makeText(applicationContext, "You should allow to acess adressbook",Toast.LENGTH_SHORT).show()
     }
 
 

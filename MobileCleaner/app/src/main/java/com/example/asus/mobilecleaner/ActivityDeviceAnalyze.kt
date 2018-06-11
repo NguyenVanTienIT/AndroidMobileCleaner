@@ -35,13 +35,8 @@ class ActivityDeviceAnalyze : AppCompatActivity() {
 
     var txtFreeDisk : TextView? = null
     var txtUsedDisk : TextView? = null
-
-    //var txtPugrableMemory : TextView? = null
     var txtFreeMemory : TextView? = null
     var txtUseMemory : TextView? = null
-    //var txtInnactiveMemory : TextView? = null
-    //var txtActiveMemory : TextView? = null
-    //var txtWiredMemory : TextView? = null
 
      var pieChart : PieChart? = null
      var pieChart1 : PieChart? = null
@@ -77,19 +72,12 @@ class ActivityDeviceAnalyze : AppCompatActivity() {
         txtFreeDisk = findViewById(R.id.free_disk)
         txtUsedDisk = findViewById(R.id.used_disk)
 
-        //txtPugrableMemory = findViewById(R.id.purgable_memory)
         txtFreeMemory = findViewById(R.id.free_memory)
         txtUseMemory = findViewById(R.id.use_memory)
-        //txtInnactiveMemory = findViewById(R.id.inactive_memory)
-        //txtActiveMemory = findViewById(R.id.active_memory)
-        //txtWiredMemory = findViewById(R.id.wired_memory)
 
         pieChart = findViewById(R.id.idPieChart)
         pieChart1 = findViewById(R.id.idPieChart1)
 
-        //var intent : Intent = getIntent()
-        //changDataMemory(intent.getStringExtra("use"), intent.getStringExtra("free"))
-        //changDataMemory(FomatDouble(getUsedRamMemorySize(),FomatDouble(getFreeRamMemorySize())
 
 
         changDataMemory(FomatDouble(getUsedMemorySize()), FomatDouble(getFreeMemorySize()))
@@ -147,7 +135,7 @@ class ActivityDeviceAnalyze : AppCompatActivity() {
         yValues.add(PieEntry(freeMemory.toFloat(), "Free disk"))
 
 
-        var dataSet : PieDataSet = PieDataSet(yValues, "Country")
+        var dataSet : PieDataSet = PieDataSet(yValues, "")
         dataSet.sliceSpace = 3f
         dataSet.selectionShift = 5f
         dataSet.setColors(colors)
@@ -189,7 +177,7 @@ class ActivityDeviceAnalyze : AppCompatActivity() {
         yValues.add(PieEntry(free.toFloat(), "Free disk"))
 
 
-        var dataSet : PieDataSet = PieDataSet(yValues, "Country")
+        var dataSet : PieDataSet = PieDataSet(yValues, "")
         dataSet.sliceSpace = 3f
         dataSet.selectionShift = 5f
         dataSet.setColors(colors)

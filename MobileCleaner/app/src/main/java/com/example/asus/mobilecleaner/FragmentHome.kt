@@ -89,6 +89,7 @@ class FragmentHome : Fragment(), Animation.AnimationListener {
 
         animation = AnimationUtils.loadAnimation(activity, R.anim.rotate);
         animation2 = AnimationUtils.loadAnimation(activity, R.anim.rotate2);
+
        // animation!!.setAnimationListener(context);
         imgLoad!!.setVisibility(View.VISIBLE);
         imgLoad!!.startAnimation(animation);
