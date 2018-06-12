@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
+    android:layout_marginTop="30dp"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -12,6 +13,7 @@
         android:layout_height="190dp"
         android:background="#430C0C"
         >
+
 
         <ImageView
             android:layout_marginTop="5dp"
@@ -30,7 +32,6 @@
             android:layout_height="150sp"
             android:src="@drawable/bg3"
             />
-
         <ImageView
             android:layout_marginTop="5dp"
             android:layout_gravity="center_horizontal"

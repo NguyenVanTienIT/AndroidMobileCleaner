@@ -12,10 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 
 class FragmentHome : Fragment(), Animation.AnimationListener {
 
@@ -52,6 +49,13 @@ class FragmentHome : Fragment(), Animation.AnimationListener {
     var itemSecure : LinearLayout? = null
 
 
+
+    companion object {
+
+        var open : Boolean = false
+
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         var view : View = inflater.inflate(R.layout.fragment_home, container, false)
         return view
@@ -66,6 +70,8 @@ class FragmentHome : Fragment(), Animation.AnimationListener {
         textMassage = view.findViewById(R.id.massage)
         textNotice = view.findViewById(R.id.notice)
         iconNotice = view.findViewById(R.id.icon_notice)
+
+        //btnMenu = view.findViewById(R.id.btn_menu)
 
 
 
@@ -131,6 +137,9 @@ class FragmentHome : Fragment(), Animation.AnimationListener {
                 startActivity(intent2)
             }
         })
+
+
+
     }
 
 

@@ -11,9 +11,13 @@ import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import android.view.View.SYSTEM_UI_FLAG_FULLSCREEN
+import android.widget.Button
+import kotlinx.android.synthetic.main.fragment_home.*
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+
+    var btnMenu : Button? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,13 +27,38 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setContentView(R.layout.activity_main)
 
 
-        supportFragmentManager.beginTransaction().add(R.id.container_home, FragmentHome()).commit()
 
-        /*val toggle = ActionBarDrawerToggle(this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
+        var fragment : FragmentHome = FragmentHome()
+
+        supportFragmentManager.beginTransaction().add(R.id.container_home, fragment).commit()
+        /*FragmentHome.openNavigation(fragment)!!.setOnClickListener(object : View.OnClickListener{
+            override fun onClick(v: View?) {
+                Toast.makeText(applicationContext, "Hello", Toast.LENGTH_SHORT).show()
+            }
+
+        })*/
+        /*FragmentHome.btnMenu!!.setOnClickListener(object : View.OnClickListener{
+            override fun onClick(v: View?) {
+                Toast.makeText(applicationContext, "Hello", Toast.LENGTH_SHORT).show()
+            }
+
+        })*/
+
+        //supportFragmentManager.beginTransaction().add(R.id.container_home, FragmentHome()).commit()
+
+        val toggle = ActionBarDrawerToggle(this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         drawer_layout.addDrawerListener(toggle)
-        toggle.syncState()*/
-
+        toggle.syncState()
         nav_view.setNavigationItemSelectedListener(this)
+
+      /*  btnMenu = findViewById(R.id.btn_menu)
+
+        btnMenu!!.setOnClickListener(object : View.OnClickListener{
+            override fun onClick(v: View?) {
+                drawer_layout.openDrawer(GravityCompat.START)
+            }
+
+        })*/
     }
 
     override fun onBackPressed() {

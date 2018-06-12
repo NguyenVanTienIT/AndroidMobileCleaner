@@ -159,7 +159,6 @@ class ActivityDetailContacts : AppCompatActivity() {
         }
         cursor.close()
 
-
         return list
     }
 

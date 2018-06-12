@@ -57,23 +57,11 @@ class ActivityContactsScan : AbsRuntimePermission() {
         requestAppPermissions(arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS),
                 R.string.msg, REQUEST_PERMISSION)
 
-        // thực hiện cấp quyền
-        //checkAndRequestPermissions()
         updateUI()
-
-
-
-        /*btnDelete!!.setOnClickListener(object  : View.OnClickListener{
-            override fun onClick(v: View?) {
-
-            }
-        })*/
-
-
     }
 
     override fun onPermissionsGranted(requestCode: Int) {
-        Toast.makeText(applicationContext, "Permission granted", Toast.LENGTH_LONG).show()
+        //Toast.makeText(applicationContext, "Permission granted", Toast.LENGTH_LONG).show()
     }
 
 
@@ -109,7 +97,6 @@ class ActivityContactsScan : AbsRuntimePermission() {
             adapter!!.notifyDataSetChanged()
         }
     }
-
 
 
 
