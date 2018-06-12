@@ -76,20 +76,6 @@ class ActivityContactsScan : AbsRuntimePermission() {
         Toast.makeText(applicationContext, "Permission granted", Toast.LENGTH_LONG).show()
     }
 
-   /* private fun checkAndRequestPermissions() {
-
-        val permissions = arrayOf(Manifest.permission.READ_CONTACTS)
-        val listPermissionsNeeded = java.util.ArrayList<String>()
-        for (permission in permissions) {
-            if (ContextCompat.checkSelfPermission(applicationContext!!, permission) != PackageManager.PERMISSION_GRANTED) {
-                listPermissionsNeeded.add(permission)
-            }
-        }
-        if (!listPermissionsNeeded.isEmpty()) {
-            ActivityCompat.requestPermissions((applicationContext as Activity?)!!, listPermissionsNeeded.toTypedArray(), 1)
-        }
-        Toast.makeText(applicationContext, "Thưc hiện cấp quyền", Toast.LENGTH_SHORT).show()
-    }*/
 
     private fun updateUI()
     {

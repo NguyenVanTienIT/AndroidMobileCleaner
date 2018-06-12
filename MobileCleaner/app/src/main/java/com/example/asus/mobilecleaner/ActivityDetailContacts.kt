@@ -2,6 +2,7 @@ package com.example.asus.mobilecleaner
 
 import android.app.PendingIntent.getActivity
 import android.content.*
+import android.database.Cursor
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -21,6 +22,11 @@ import android.provider.CallLog
 import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.view.*
+import java.nio.file.Files.delete
+import java.nio.file.Files.delete
+import android.content.ContentResolver
+import java.nio.file.Files.delete
+
 
 
 class ActivityDetailContacts : AppCompatActivity() {
@@ -73,12 +79,11 @@ class ActivityDetailContacts : AppCompatActivity() {
                 if (idSelect != null && phoneSelect != null) {
                     deleteContact(applicationContext, phoneSelect!!, nameSelect!!,idSelect!!)
                     deleteContactsInList(idSelect!!)
-                    //deleteContact(applicationContext, idSelect!!)
                     idSelect = null
                     phoneSelect = null
                     nameSelect = null
+                    adapterDetailContacts!!.notifyDataSetChanged()
 
-                    //updateUI(nd)
                 } else {
                     Toast.makeText(applicationContext, "Please choose 1 contacts", Toast.LENGTH_SHORT).show()
                 }
@@ -192,7 +197,6 @@ class ActivityDetailContacts : AppCompatActivity() {
             }
             else  imgDetail!!.setImageResource(R.drawable.user)
 
-            //imgDetail!!.setImageResource(R.drawable.ic_contact)
             emailDetail!!.setText(contacts.email)
             id!!.setText(contacts.idContacts)
         }
@@ -257,64 +261,30 @@ class ActivityDetailContacts : AppCompatActivity() {
         val cur = ctx.contentResolver.query(contactUri, null, null, null, null)
         var value : Array<String> = arrayOf(id)
 
-        //try {
-
+        try {
                 while (cur.moveToNext()) {
                     if (cur.getString(cur.getColumnIndex(PhoneLookup.DISPLAY_NAME)).equals(name)) {
 
                         if(cur.getString(cur.getColumnIndex(PhoneLookup.DATA_ID)).equals(id)) {
-                            //val lookupKey = cur.getString(cur.getColumnIndex(PhoneLookup.DATA_ID))
                             val lookupKey = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY))
-                           // val uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, lookupKey)
                             val uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, lookupKey)
-                             ctx.contentResolver.delete(uri, cur.getString(cur.getColumnIndex(PhoneLookup.DATA_ID)) + "=?", value)
-                            //ctx.contentResolver.delete(uri, null, null)
-                            Toast.makeText(applicationContext, "Đã xóa được " + lookupKey + " = " + value[0].toString(), Toast.LENGTH_SHORT).show()
 
-
-                            //Log.d("id",cur.getString(cur.getColumnIndex(PhoneLookup.CONTACT_ID)))
+                            ctx.getContentResolver().delete(uri, cur.getString(cur.getColumnIndex(PhoneLookup.DATA_ID)) + "=?", value)
+                            //Toast.makeText(applicationContext, "Đã xóa được " + lookupKey + " = " + value[0].toString(), Toast.LENGTH_SHORT).show()
                             return true
 
                         }
-
-                        /* if (cur.getString(cur.getColumnIndex(PhoneLookup.DISPLAY_NAME)).equals(name)) {
-                        val lookupKey = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY))
-                        val uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, lookupKey)
-                        //val uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, id)
-                        ctx.contentResolver.delete(uri, cur.getString(cur.getColumnIndex(PhoneLookup.DISPLAY_NAME)) + "=", value)
-                        Toast.makeText(applicationContext, "Đã xóa được " + cur.getString(cur.getColumnIndex(PhoneLookup.DISPLAY_NAME)) + " = " + value[0].toString(), Toast.LENGTH_SHORT).show()
-
-                        return true
-                    }*/
                     }
                 }
-
-
-
-
-
-       /* } catch (e: Exception) {
+       } catch (e: Exception) {
             println(e.stackTrace)
-            Toast.makeText(applicationContext, "chưa vào được đây đâu bạn ơi  ", Toast.LENGTH_SHORT).show()
-        }*/
-        //finally {
+            Toast.makeText(applicationContext, "Erorr", Toast.LENGTH_SHORT).show()
+        }
+        finally {
         cur!!.close()
-        //}
+        }
         return false
     }
-
-    fun remove(id : String, contactNumber : String){
-        val projection = arrayOf(ContactsContract.CommonDataKinds.Phone._ID, ContactsContract.CommonDataKinds.Phone.CONTACT_ID)
-        val contactUri = Uri.withAppendedPath(ContactsContract.CommonDataKinds.Phone.CONTENT_FILTER_URI, Uri.encode(contactNumber))
-        val c = applicationContext.getContentResolver().query(contactUri, projection, null, null, null)
-        while (c.moveToFirst()) {
-            if(c.getInt(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID)).toString() == id){
-
-            }
-        }
-    }
-
-
 
 }
 
