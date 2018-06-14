@@ -54,7 +54,7 @@ class ActivityContactsScan : AbsRuntimePermission() {
        /* requestAppPermissions(arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.WRITE_CONTACTS),
                 R.string.msg, REQUEST_PERMISSION)*/
 
-        requestAppPermissions(arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS),
+        requestAppPermissions(arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS, Manifest.permission.WRITE_EXTERNAL_STORAGE),
                 R.string.msg, REQUEST_PERMISSION)
 
         updateUI()

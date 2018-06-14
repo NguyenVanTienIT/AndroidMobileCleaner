@@ -125,7 +125,8 @@ class FragmentHome : Fragment(), Animation.AnimationListener {
 
         itemFullScan!!.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
-                Toast.makeText(activity, "Full Scanning", Toast.LENGTH_SHORT).show()
+                var intent : Intent = Intent(activity, ActivityBackup::class.java)
+                startActivity(intent)
             }
         })
 

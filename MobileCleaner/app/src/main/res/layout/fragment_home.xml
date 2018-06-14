@@ -193,7 +193,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:src="@drawable/ic3"
+                android:src="@drawable/yellow"
                 />
 
             <LinearLayout
@@ -207,16 +207,16 @@
                     android:textColor="#FFF"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Full Contacts Scan"
+                    android:text="Contacts Backup"
                     android:textSize="20dp"
                     />
 
                 <TextView
-                    android:textColor="#CD3C3D"
+                    android:textColor="#D1BE3C"
                     android:id="@+id/status_fullScan"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="722 contact dupplicated founds"
+                    android:text="Lastest backup at 6:01 PM Yesterday"
                     />
             </LinearLayout>
         </LinearLayout>
