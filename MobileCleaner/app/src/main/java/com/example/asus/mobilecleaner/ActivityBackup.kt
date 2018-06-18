@@ -21,6 +21,21 @@ import android.widget.*
 import android.provider.ContactsContract
 import java.io.*
 import java.lang.reflect.Array.get
+import android.R.attr.path
+import android.content.ContentUris
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.os.Build
+import android.support.annotation.RequiresApi
+import android.support.v4.content.FileProvider
+import java.nio.charset.StandardCharsets
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.attribute.BasicFileAttributes
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 class ActivityBackup : AppCompatActivity() {
@@ -29,6 +44,9 @@ class ActivityBackup : AppCompatActivity() {
     var recyclerHistory : RecyclerView? = null
     var listHistory : ArrayList<BackupContacts>? = null
     var historyAdapter : BackupAdapter?  = null
+
+
+    val sdf = SimpleDateFormat("dd-MM-yyyy HH:mm:ss")
 
 
     companion object {
@@ -55,135 +73,163 @@ class ActivityBackup : AppCompatActivity() {
         // make folder for app
 
         val f = File(Environment.getExternalStorageDirectory().toString()+ nameStogre)
-        if (!f.exists())
-            f.mkdir()
+        if (!f.exists())    f.mkdir()
 
         initView()
 
 
         btnBackup!!.setOnClickListener(object : View.OnClickListener{
             override fun onClick(v: View?) {
+                btnBackup!!.isEnabled = false
                 getVcardString()
             }
         })
     }
 
-    private fun isExternalStorageWritable(): Boolean {
+    /*private fun isExternalStorageWritable(): Boolean {
         if (Environment.MEDIA_MOUNTED == Environment.getExternalStorageState()) {
             return true
         } else {
             return false
         }
-    }
-
-
-    fun BackupToStorage(){
-
-    }
-
-
-   /* fun writeFile(list : ArrayList<Contacts>) {
-        if (isExternalStorageWritable() && checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            val textFile = File(Environment.getExternalStorageDirectory().toString() + nameStogre, "Contacts.vcf")
-            try {
-                val fos = FileOutputStream(textFile)
-                for (contacts : Contacts in list){
-
-                }
-
-                fos.write(text.getText().toString().toByteArray())
-                fos.close()
-
-                Toast.makeText(this, "File Saved.", Toast.LENGTH_SHORT).show()
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-
-        } else {
-            Toast.makeText(this, "Cannot Write to External Storage.", Toast.LENGTH_SHORT).show()
-        }
     }*/
 
 
-    private fun getVcardString() {
+    private fun getContactList() : ArrayList<Contacts>? {
+        var list: ArrayList<Contacts> = ArrayList()
 
-
-       var vCard = ArrayList<String>()  // Its global....
         try {
-            var cursor = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null)
-            if (cursor != null && cursor.getCount() > 0) {
-                var i: Int
-                //val storage_path = Environment.getExternalStorageDirectory().toString() + nameStogre + "Contacts.VCF"
-                //val textFile = File(Environment.getExternalStorageDirectory().toString() + nameStogre, "Contacts.VCF")
-                val textFile = File(Environment.getExternalStorageDirectory().toString() + nameStogre, "Contacts.txt")
-                val mFileOutputStream = FileOutputStream(textFile)
-                cursor.moveToFirst()
-                i = 0
-                while (i < cursor.getCount()) {
-                    Toast.makeText(applicationContext, "this is here"+cursor.getCount(), Toast.LENGTH_SHORT).show()
-                    vCard.add(get(cursor, vCard)!!.toString())
-                    //vCard.add("0968931478")
-                    Log.d("TAG", "Contact " + (i + 1) + "VcF String is" + vCard.get(i))
-                    cursor.moveToNext()
-                    mFileOutputStream.write(vCard.get(i).toString().toByteArray())
-                    i++
-                }
-                mFileOutputStream.close()
-                cursor.close()
+            var uriContacts: Uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI
+            var cursor = applicationContext!!.contentResolver.query(uriContacts, null, null, null, null)
+
+            while (cursor.moveToNext()) {
+                var idName: String = ContactsContract.Contacts.DISPLAY_NAME
+                //var idContact: String = ContactsContract.Data._ID
+                var idContact: String = ContactsContract.Contacts._ID
+                var idPhone: String = ContactsContract.CommonDataKinds.Phone.NUMBER
+
+
+                var colNameIndex: Int = cursor.getColumnIndex(idName)
+                var colPhoneIndex: Int = cursor.getColumnIndex(idPhone)
+                var colId: Int = cursor.getColumnIndex(idContact)
+
+                var name: String = cursor.getString(colNameIndex)
+                var phone: String = cursor.getString(colPhoneIndex)
+                var id: String = cursor.getString(colId)
+
+                val photoId = cursor.getLong(cursor.getColumnIndex(ContactsContract.Data.PHOTO_ID))
+                val contactId: Long = cursor.position.toLong()
+
+                /*val emailCur = contentResolver.query(ContactsContract.CommonDataKinds.Email.CONTENT_URI, null, ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = ?", arrayOf(id), null)
+                emailCur.moveToNext()
+                val email = emailCur.getString(emailCur.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA))
+                emailCur.close();*/
+
+
+                var src: Uri? = null
+
+                if (photoId != 0L) {
+                    val contactUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contactId)
+                    val photUri = Uri.withAppendedPath(contactUri, ContactsContract.Contacts.Photo.CONTENT_DIRECTORY)
+                    src = photUri
+                } else src = null
+
+                var contacts: Contacts = Contacts(id, src, phone, name, 1, null)
+
+                list.add(contacts)
+
             }
-            else {
-                Log.d("TAG", "No Contacts in Your Phone")
-            }
+            cursor.close()
         }
-        catch (e : Exception){
-            e.printStackTrace()
-        }
-    }
-
-
-    private fun get(cursor : Cursor, list : ArrayList<String>) : String?{
-        var   lookupKey : String= cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
-        var uri : Uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_VCARD_URI, lookupKey);
-        var fd : AssetFileDescriptor? = null;
-        try {
-            fd = this.getContentResolver().openAssetFileDescriptor(uri, "r");
-
-            var fis : FileInputStream = fd.createInputStream();
-           // var buf : ByteArray = (fd.getDeclaredLength() as Int) as ByteArray
-            //var buf : ByteArray = ByteArray(fd.getDeclaredLength().toInt())
-            var buf : ByteArray = readBytes(fis)
-            //fis.read(buf);
-            var vcardstring : String = buf.toString()
-            //list.add(vcardstring);
-            return vcardstring
-        }
-        catch (e1 : Exception)
+        catch (e : Exception)
         {
-            e1.printStackTrace();
+            //Toast.makeText(applicationContext, "You should allow to acess adressbook",Toast.LENGTH_SHORT).show()
         }
-        return null
+        return list
     }
 
 
-    @Throws(IOException::class)
-    fun readBytes(inputStream: InputStream): ByteArray {
-        // this dynamically extends to take the bytes you read
-        val byteBuffer = ByteArrayOutputStream()
 
-        // this is storage overwritten on each iteration with bytes
-        val bufferSize = 1024
-        val buffer = ByteArray(bufferSize)
+    private fun getVcardString(){
 
-        // we need to know how may bytes were read to write them to the byteBuffer
-        var len = 0
-        while (len != -1) {
-            byteBuffer.write(buffer, 0, len)
-            len = inputStream.read(buffer)
+                var nameFile : String = UUID.randomUUID().toString()
+
+                while (checkRandomNameFile(nameFile)){
+                    nameFile = UUID.randomUUID().toString()
+                }
+
+                val textFile = File(Environment.getExternalStorageDirectory().toString() + nameStogre, nameFile+".VCF")
+                val mFileOutputStream = FileOutputStream(textFile)
+                val w = BufferedWriter(OutputStreamWriter(mFileOutputStream, StandardCharsets.UTF_8))
+
+                var listContacts : ArrayList<Contacts> = getContactList()!!
+
+                for (contacts : Contacts in listContacts){
+                    w.write("BEGIN:VCARD\r\n")
+
+                    w.write("VERSION:3.0\r\n")
+                    w.write("FN:" + contacts.name.toString() + "\r\n")
+                    w.write("TEL;TYPE=WORK,VOICE:" + contacts.numberPhone + "\r\n")
+                    w.write("EMAIL;TYPE=PREF,INTERNET:" + contacts.email + "\r\n")
+
+                    w.write("END:VCARD\r\n")
+                }
+                Toast.makeText(applicationContext, "Backup Complete", Toast.LENGTH_SHORT).show()
+                w.close()
+                mFileOutputStream.close()
+
+                val cal : Calendar = Calendar.getInstance();
+                var timeCreat = sdf.format(cal.time)
+
+                val fileInformation = File(Environment.getExternalStorageDirectory().toString() + nameStogre, nameFile+".txt")
+                //var out = openFileOutput(fileInformation.toString(), Context.MODE_PRIVATE)
+                val out = FileOutputStream(fileInformation)
+                val w2 = BufferedWriter(OutputStreamWriter(out, StandardCharsets.UTF_8))
+                w2.write(listContacts.size.toString()+"/"+timeCreat)
+
+                w2.close()
+                out.close()
+
+                FileRecent(timeCreat)
+                //listHistory?.add(BackupContacts( listContacts.size,timeCreat,nameFile))
+                listHistory?.add(0, BackupContacts(listContacts.size, timeCreat, nameFile))
+                //Collections.reverse(listHistory);
+                historyAdapter!!.notifyDataSetChanged()
+                btnBackup!!.isEnabled = true
+    }
+
+        fun FileRecent(time : String){
+            val fileInformation = File(Environment.getExternalStorageDirectory().toString() + nameStogre, "recent.txt")
+            //var out = openFileOutput(fileInformation.toString(), Context.MODE_PRIVATE)
+            val out = FileOutputStream(fileInformation)
+            val w2 = BufferedWriter(OutputStreamWriter(out, StandardCharsets.UTF_8))
+            w2.write(time)
+            w2.close()
+            out.close()
         }
 
-        // and then we can return your byte array.
-        return byteBuffer.toByteArray()
+    fun checkRandomNameFile(name : String) : Boolean{
+        var listName : ArrayList<String> = getListNameFile()
+
+        for(i : String in listName){
+            if (i == name) return  true
+        }
+        return false
     }
+
+    fun getListNameFile() : ArrayList<String>{
+        var results : ArrayList<String> = ArrayList<String>();
+        var files : Array<File>? = File(Environment.getExternalStorageDirectory().toString() + nameStogre).listFiles()
+
+        for ( file in files!!) {
+            var index : Int = file.toString().lastIndexOf("/")
+            var nameFile : String = file.toString().substring(index+1)
+            results.add(nameFile);
+        }
+        return results
+    }
+
+
 
     fun checkPermission(permission: String): Boolean {
         val check = ContextCompat.checkSelfPermission(this, permission)
@@ -194,33 +240,53 @@ class ActivityBackup : AppCompatActivity() {
 
     private fun initView() {
 
+        var results : ArrayList<String> = ArrayList<String>();
+        var files : Array<File>? = File(Environment.getExternalStorageDirectory().toString() + nameStogre).listFiles()
 
-        for(i in 0..5){
-            listHistory?.add(BackupContacts(i * 1000,"14/08/1997",null))
+        for ( file in files!!) {
+
+            var index : Int = file.toString().lastIndexOf("/")
+            var nameFile : String = file.toString().substring(index+1)
+            results.add(nameFile);
+
+            var indexPoint = nameFile.lastIndexOf(".")
+            var format : String = nameFile.substring(indexPoint+1)
+
+           if (format == "txt" && nameFile != "recent.txt") {
+               val input = FileInputStream(file)
+               val r = BufferedReader(InputStreamReader(input, StandardCharsets.UTF_8))
+
+               var data :  String = r.readLine()
+               var i : Int = data.lastIndexOf("/")
+               var num = data.substring(0, i)
+               var time : String = data.substring(i+1)
+
+               listHistory?.add(BackupContacts(num.toInt(), time, nameFile))
+           }
         }
+
+
 
 
         if(historyAdapter == null) {
+            Collections.reverse(listHistory);
             historyAdapter = BackupAdapter(listHistory!!)
             recyclerHistory!!.adapter = historyAdapter
         }
-
         else{
             historyAdapter!!.notifyDataSetChanged()
         }
     }
 
+
+
     inner class BackupHolder(inflater : LayoutInflater, parent : ViewGroup) :
             RecyclerView.ViewHolder(inflater.inflate(R.layout.item_history_backup,parent,false)),
             View.OnClickListener{
 
-
         var txtNumContacts : TextView?= null
         var txtTimebackup : TextView? = null
-
-
         var newBackupContact : BackupContacts? = null
-
 
         init {
             txtNumContacts = itemView.findViewById(R.id.count_contacts)
@@ -229,8 +295,6 @@ class ActivityBackup : AppCompatActivity() {
             itemView.setOnClickListener(this)
         }
 
-
-
         fun bind(backupContacts: BackupContacts){
             newBackupContact = backupContacts
             txtNumContacts!!.setText(backupContacts.numCount.toString())
@@ -238,10 +302,26 @@ class ActivityBackup : AppCompatActivity() {
         }
 
         override fun onClick(v: View?) {
-            Toast.makeText(applicationContext, "Chúng tôi sẽ phát triển sau", Toast.LENGTH_SHORT).show()
+            var path : String = Environment.getExternalStorageDirectory().toString() + nameStogre + "/"+ newBackupContact!!.urlShare
+            ShareFile(path)
         }
-
     }
+
+    fun ShareFile(myFilePath : String){
+        var intentShareFile = Intent(Intent.ACTION_SEND);
+        var fileWithinMyDir =  File(myFilePath);
+
+        if(fileWithinMyDir.exists()) {
+        intentShareFile.setType("application/pdf");
+        intentShareFile.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://"+myFilePath));
+
+        intentShareFile.putExtra(Intent.EXTRA_SUBJECT,"Sharing File...");
+        intentShareFile.putExtra(Intent.EXTRA_TEXT, "Sharing File...");
+
+        startActivity(Intent.createChooser(intentShareFile, "Share File"));
+        }
+    }
+
 
     inner class BackupAdapter(listBackup : ArrayList<BackupContacts>) : RecyclerView.Adapter<BackupHolder>(){
 

@@ -4,6 +4,7 @@ import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Environment
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentTransaction
@@ -13,6 +14,13 @@ import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.*
+import android.view.animation.LinearInterpolator
+import java.io.BufferedReader
+import java.io.File
+import java.io.FileInputStream
+import java.io.InputStreamReader
+import java.nio.charset.StandardCharsets
+
 
 class FragmentHome : Fragment(), Animation.AnimationListener {
 
@@ -103,6 +111,28 @@ class FragmentHome : Fragment(), Animation.AnimationListener {
         imgArroud!!.setVisibility(View.VISIBLE);
         imgArroud!!.startAnimation(animation2);
 
+        animation!!.setInterpolator(LinearInterpolator());
+        animation2!!.setInterpolator(LinearInterpolator());
+
+
+
+        val fileRecent = File(Environment.getExternalStorageDirectory().toString() + ActivityBackup.nameStogre, "recent.txt")
+
+        if(fileRecent.exists()){
+            val input = FileInputStream(fileRecent)
+            val r = BufferedReader(InputStreamReader(input, StandardCharsets.UTF_8))
+            var data :  String = r.readLine()
+            statusFullScan!!.setText("Lastest backup at "+data)
+
+            input.close()
+            r.close()
+        }
+        else{
+            statusFullScan!!.setText("you have not backed up")
+        }
+
+
+
         itemAnalyze!!.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
                 var intent : Intent = Intent(activity, ActivityDeviceAnalyze::class.java)
@@ -143,6 +173,24 @@ class FragmentHome : Fragment(), Animation.AnimationListener {
 
     }
 
+
+    override fun onResume() {
+        super.onResume()
+        val fileRecent = File(Environment.getExternalStorageDirectory().toString() + ActivityBackup.nameStogre, "recent.txt")
+
+        if(fileRecent.exists()){
+            val input = FileInputStream(fileRecent)
+            val r = BufferedReader(InputStreamReader(input, StandardCharsets.UTF_8))
+            var data :  String = r.readLine()
+            statusFullScan!!.setText("Lastest backup at "+data)
+
+            input.close()
+            r.close()
+        }
+        else{
+            statusFullScan!!.setText("you have not backed up")
+        }
+    }
 
     override fun onAnimationRepeat(animation: Animation?) {
 
