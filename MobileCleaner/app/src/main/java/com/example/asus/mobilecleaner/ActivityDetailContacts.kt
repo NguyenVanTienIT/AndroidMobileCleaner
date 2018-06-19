@@ -79,6 +79,7 @@ class ActivityDetailContacts : AppCompatActivity() {
                 if (idSelect != null && phoneSelect != null) {
                     deleteContact(applicationContext, phoneSelect!!, nameSelect!!,idSelect!!)
                     deleteContactsInList(idSelect!!)
+                    ActivityContactsScan.phoneRemove = phoneSelect
                     idSelect = null
                     phoneSelect = null
                     nameSelect = null

@@ -38,7 +38,8 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 
-class ActivityBackup : AppCompatActivity() {
+class ActivityBackup : AbsRuntimePermission() {
+
 
     var btnBackup : Button? = null
     var recyclerHistory : RecyclerView? = null
@@ -50,6 +51,7 @@ class ActivityBackup : AppCompatActivity() {
 
 
     companion object {
+        private val REQUEST_PERMISSION = 10
         val nameStogre : String = "/MobileCleaner"
     }
 
@@ -70,10 +72,17 @@ class ActivityBackup : AppCompatActivity() {
 
         listHistory = ArrayList()
 
-        // make folder for app
+        requestAppPermissions(arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.INTERNET),
+                R.string.msg, REQUEST_PERMISSION)
 
-        val f = File(Environment.getExternalStorageDirectory().toString()+ nameStogre)
-        if (!f.exists())    f.mkdir()
+        // make folder for app
+        try {
+            val f = File(Environment.getExternalStorageDirectory().toString() + nameStogre)
+            if (!f.exists()) f.mkdir()
+        }
+        catch (e : Exception){
+            Toast.makeText(applicationContext, "Xảy ra lỗi ở đây", Toast.LENGTH_SHORT).show()
+        }
 
         initView()
 
@@ -148,9 +157,12 @@ class ActivityBackup : AppCompatActivity() {
         return list
     }
 
+    override fun onPermissionsGranted(requestCode: Int) {
 
+    }
 
     private fun getVcardString(){
+            try {
 
                 var nameFile : String = UUID.randomUUID().toString()
 
@@ -158,13 +170,13 @@ class ActivityBackup : AppCompatActivity() {
                     nameFile = UUID.randomUUID().toString()
                 }
 
-                val textFile = File(Environment.getExternalStorageDirectory().toString() + nameStogre, nameFile+".VCF")
+                val textFile = File(Environment.getExternalStorageDirectory().toString() + nameStogre, nameFile + ".VCF")
                 val mFileOutputStream = FileOutputStream(textFile)
                 val w = BufferedWriter(OutputStreamWriter(mFileOutputStream, StandardCharsets.UTF_8))
 
-                var listContacts : ArrayList<Contacts> = getContactList()!!
+                var listContacts: ArrayList<Contacts> = getContactList()!!
 
-                for (contacts : Contacts in listContacts){
+                for (contacts: Contacts in listContacts) {
                     w.write("BEGIN:VCARD\r\n")
 
                     w.write("VERSION:3.0\r\n")
@@ -178,14 +190,14 @@ class ActivityBackup : AppCompatActivity() {
                 w.close()
                 mFileOutputStream.close()
 
-                val cal : Calendar = Calendar.getInstance();
+                val cal: Calendar = Calendar.getInstance();
                 var timeCreat = sdf.format(cal.time)
 
-                val fileInformation = File(Environment.getExternalStorageDirectory().toString() + nameStogre, nameFile+".txt")
+                val fileInformation = File(Environment.getExternalStorageDirectory().toString() + nameStogre, nameFile + ".txt")
                 //var out = openFileOutput(fileInformation.toString(), Context.MODE_PRIVATE)
                 val out = FileOutputStream(fileInformation)
                 val w2 = BufferedWriter(OutputStreamWriter(out, StandardCharsets.UTF_8))
-                w2.write(listContacts.size.toString()+"/"+timeCreat)
+                w2.write(listContacts.size.toString() + "/" + timeCreat)
 
                 w2.close()
                 out.close()
@@ -195,7 +207,13 @@ class ActivityBackup : AppCompatActivity() {
                 listHistory?.add(0, BackupContacts(listContacts.size, timeCreat, nameFile))
                 //Collections.reverse(listHistory);
                 historyAdapter!!.notifyDataSetChanged()
+                //recyclerHistory!!.adapter = historyAdapter
                 btnBackup!!.isEnabled = true
+            }
+            catch (e : Exception){
+                Toast.makeText(applicationContext, "Plese allow pessminsion", Toast.LENGTH_SHORT).show()
+                btnBackup!!.isEnabled = true
+            }
     }
 
         fun FileRecent(time : String){
@@ -211,6 +229,7 @@ class ActivityBackup : AppCompatActivity() {
     fun checkRandomNameFile(name : String) : Boolean{
         var listName : ArrayList<String> = getListNameFile()
 
+        if(listName == null) return  false
         for(i : String in listName){
             if (i == name) return  true
         }
@@ -243,26 +262,33 @@ class ActivityBackup : AppCompatActivity() {
         var results : ArrayList<String> = ArrayList<String>();
         var files : Array<File>? = File(Environment.getExternalStorageDirectory().toString() + nameStogre).listFiles()
 
-        for ( file in files!!) {
+        if(files != null) {
+            for (file in files!!) {
 
-            var index : Int = file.toString().lastIndexOf("/")
-            var nameFile : String = file.toString().substring(index+1)
-            results.add(nameFile);
+                var index: Int = file.toString().lastIndexOf("/")
+                var nameFile: String = file.toString().substring(index + 1)
+                results.add(nameFile);
 
-            var indexPoint = nameFile.lastIndexOf(".")
-            var format : String = nameFile.substring(indexPoint+1)
+                var indexPoint = nameFile.lastIndexOf(".")
+                var format: String = nameFile.substring(indexPoint + 1)
 
-           if (format == "txt" && nameFile != "recent.txt") {
-               val input = FileInputStream(file)
-               val r = BufferedReader(InputStreamReader(input, StandardCharsets.UTF_8))
+                if (format == "txt" && nameFile != "recent.txt") {
+                    try {
+                        val input = FileInputStream(file)
+                        val r = BufferedReader(InputStreamReader(input, StandardCharsets.UTF_8))
 
-               var data :  String = r.readLine()
-               var i : Int = data.lastIndexOf("/")
-               var num = data.substring(0, i)
-               var time : String = data.substring(i+1)
+                        var data: String = r.readLine()
+                        var i: Int = data.lastIndexOf("/")
+                        var num = data.substring(0, i)
+                        var time: String = data.substring(i + 1)
 
-               listHistory?.add(BackupContacts(num.toInt(), time, nameFile))
-           }
+                        listHistory?.add(BackupContacts(num.toInt(), time, nameFile))
+                    }
+                    catch (e : Exception){
+                        Toast.makeText(applicationContext, "Xảy ra lỗi ở đây", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
         }
 
 

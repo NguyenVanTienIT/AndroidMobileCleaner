@@ -27,9 +27,12 @@ class ActivityContactsScan : AbsRuntimePermission() {
     var listRecycler : RecyclerView? = null
     var adapter : ContactAdapter? = null
     var listContact :  ArrayList<Contacts>? = null
+    var listTam : ArrayList<Contacts>?  = null
     //var btnDelete : Button?= null
     companion object {
         private val REQUEST_PERMISSION = 10
+        private var check = false
+        public var phoneRemove : String? = null
     }
 
 
@@ -65,11 +68,35 @@ class ActivityContactsScan : AbsRuntimePermission() {
     }
 
 
+    override fun onResume() {
+        super.onResume()
+        if(check) {
+            if (phoneRemove != null) {
+                for (c: Contacts in listTam!!) {
+                    if (c.numberPhone == phoneRemove!!) {
+                        var len : Int? = c.numberCount
+                        len = len!! - 1
+                        if(len < 2){
+                            listTam!!.remove(c)
+                        }
+                        else {
+                            c.numberCount = len
+                        }
+                    }
+                }
+                adapter!!.notifyDataSetChanged()
+                check = false
+            }
+        }
+    }
+
+
+
     private fun updateUI()
     {
         // set Adapter cho recyclerview
         listContact = getContactList()
-        var listTam : ArrayList<Contacts> = ArrayList()
+        listTam  = ArrayList()
 
         for(contacts1 : Contacts in listContact!!){
             var count = 0;
@@ -84,7 +111,7 @@ class ActivityContactsScan : AbsRuntimePermission() {
                 }
             }
             if (count > 1){
-                listTam.add(contacts1)
+                listTam?.add(contacts1)
             }
         }
 
@@ -195,7 +222,9 @@ class ActivityContactsScan : AbsRuntimePermission() {
         override fun onClick(v: View?) {
             var intent : Intent = Intent(applicationContext, ActivityDetailContacts::class.java)
             intent.putExtra("contacts", newContact!!.numberPhone)
+            check = true
             startActivity(intent)
+            //startActivityForResult(intent, RESULT_OK)
 
         }
 

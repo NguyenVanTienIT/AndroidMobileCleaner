@@ -1,5 +1,6 @@
 package com.example.asus.mobilecleaner
 
+import android.Manifest
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
@@ -22,7 +23,7 @@ import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
 
 
-class FragmentHome : Fragment(), Animation.AnimationListener {
+class FragmentHome : Fragment(), Animation.AnimationListener{
 
 
     //private var fragmentManager : FragmentManager? = null
@@ -57,10 +58,11 @@ class FragmentHome : Fragment(), Animation.AnimationListener {
     var itemSecure : LinearLayout? = null
 
 
-
     companion object {
 
         var open : Boolean = false
+        var trans : Boolean = false
+
 
     }
 
@@ -116,19 +118,25 @@ class FragmentHome : Fragment(), Animation.AnimationListener {
 
 
 
-        val fileRecent = File(Environment.getExternalStorageDirectory().toString() + ActivityBackup.nameStogre, "recent.txt")
+        try {
+            val fileRecent = File(Environment.getExternalStorageDirectory().toString() + "/MobileCleaner", "recent.txt")
 
-        if(fileRecent.exists()){
-            val input = FileInputStream(fileRecent)
-            val r = BufferedReader(InputStreamReader(input, StandardCharsets.UTF_8))
-            var data :  String = r.readLine()
-            statusFullScan!!.setText("Lastest backup at "+data)
+            if (fileRecent.exists()) {
+                val input = FileInputStream(fileRecent)
+                val r = BufferedReader(InputStreamReader(input, StandardCharsets.UTF_8))
+                var data: String = r.readLine()
+                statusFullScan!!.setText("Lastest backup at " + data)
 
-            input.close()
-            r.close()
+                input.close()
+                r.close()
+            } else {
+                statusFullScan!!.setText("you have not backed up")
+            }
+            open = true
         }
-        else{
-            statusFullScan!!.setText("you have not backed up")
+        catch (e : Exception){
+            open = false
+            statusFullScan!!.setText("please allow pessminsion")
         }
 
 
@@ -155,8 +163,13 @@ class FragmentHome : Fragment(), Animation.AnimationListener {
 
         itemFullScan!!.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
-                var intent : Intent = Intent(activity, ActivityBackup::class.java)
-                startActivity(intent)
+                if(open) {
+                    var intent: Intent = Intent(activity, ActivityBackup::class.java)
+                    startActivity(intent)
+                }
+                else{
+                    statusFullScan!!.setText("please allow pessminsion")
+                }
             }
         })
 
@@ -174,21 +187,29 @@ class FragmentHome : Fragment(), Animation.AnimationListener {
     }
 
 
+
+
     override fun onResume() {
         super.onResume()
-        val fileRecent = File(Environment.getExternalStorageDirectory().toString() + ActivityBackup.nameStogre, "recent.txt")
+        try {
+            val fileRecent = File(Environment.getExternalStorageDirectory().toString() + "/MobileCleaner", "recent.txt")
 
-        if(fileRecent.exists()){
-            val input = FileInputStream(fileRecent)
-            val r = BufferedReader(InputStreamReader(input, StandardCharsets.UTF_8))
-            var data :  String = r.readLine()
-            statusFullScan!!.setText("Lastest backup at "+data)
+            if (fileRecent.exists()) {
 
-            input.close()
-            r.close()
-        }
-        else{
-            statusFullScan!!.setText("you have not backed up")
+                val input = FileInputStream(fileRecent)
+                val r = BufferedReader(InputStreamReader(input, StandardCharsets.UTF_8))
+                var data: String = r.readLine()
+                statusFullScan!!.setText("Lastest backup at " + data)
+
+                input.close()
+                r.close()
+            } else {
+                statusFullScan!!.setText("you have not backed up")
+            }
+            open = true
+        }catch (e : Exception){
+            open =false
+            statusFullScan!!.setText("please allow pessminsion")
         }
     }
 

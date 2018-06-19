@@ -1,5 +1,6 @@
 package com.example.asus.mobilecleaner
 
+import android.Manifest
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.design.widget.NavigationView
@@ -15,9 +16,13 @@ import android.widget.Button
 import kotlinx.android.synthetic.main.fragment_home.*
 
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+class MainActivity :  NavigationView.OnNavigationItemSelectedListener, AbsRuntimePermission() {
+
 
     var btnMenu : Button? = null
+    companion object {
+        private val REQUEST_PERMISSION = 10
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,24 +30,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
 
         setContentView(R.layout.activity_main)
-
-
+        requestAppPermissions(arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.INTERNET),
+                R.string.msg, REQUEST_PERMISSION)
 
         var fragment : FragmentHome = FragmentHome()
 
         supportFragmentManager.beginTransaction().add(R.id.container_home, fragment).commit()
-        /*FragmentHome.openNavigation(fragment)!!.setOnClickListener(object : View.OnClickListener{
-            override fun onClick(v: View?) {
-                Toast.makeText(applicationContext, "Hello", Toast.LENGTH_SHORT).show()
-            }
-
-        })*/
-        /*FragmentHome.btnMenu!!.setOnClickListener(object : View.OnClickListener{
-            override fun onClick(v: View?) {
-                Toast.makeText(applicationContext, "Hello", Toast.LENGTH_SHORT).show()
-            }
-
-        })*/
 
         //supportFragmentManager.beginTransaction().add(R.id.container_home, FragmentHome()).commit()
 
@@ -51,15 +44,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         toggle.syncState()
         nav_view.setNavigationItemSelectedListener(this)
 
-      /*  btnMenu = findViewById(R.id.btn_menu)
-
-        btnMenu!!.setOnClickListener(object : View.OnClickListener{
-            override fun onClick(v: View?) {
-                drawer_layout.openDrawer(GravityCompat.START)
-            }
-
-        })*/
     }
+
+    override fun onPermissionsGranted(requestCode: Int) {
+
+    }
+
+
 
     override fun onBackPressed() {
         if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
