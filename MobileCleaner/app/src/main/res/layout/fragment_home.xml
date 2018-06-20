@@ -9,6 +9,7 @@
     >
 
     <FrameLayout
+        android:id="@+id/backgroud_status"
         android:layout_width="match_parent"
         android:layout_height="190dp"
         android:background="#430C0C"
@@ -193,7 +194,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:src="@drawable/yellow"
+                android:src="@drawable/dash_icn_green3"
                 />
 
             <LinearLayout
@@ -228,7 +229,7 @@
             android:layout_height="1dp"/>
 
 
-        <LinearLayout
+        <!--<LinearLayout
             android:id="@+id/secure"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -273,7 +274,7 @@
 
             android:background="#FFF"
             android:layout_width="match_parent"
-            android:layout_height="1dp"/>
+            android:layout_height="1dp"/>-->
 
     </LinearLayout>
 </LinearLayout>

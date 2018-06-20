@@ -11,6 +11,8 @@ import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.os.Environment
+import android.os.StatFs
 import android.util.Log
 import android.view.Window
 import android.view.WindowManager
@@ -40,6 +42,9 @@ class ActivityDeviceAnalyze : AppCompatActivity() {
 
      var pieChart : PieChart? = null
      var pieChart1 : PieChart? = null
+
+
+
 
 
 
@@ -79,24 +84,50 @@ class ActivityDeviceAnalyze : AppCompatActivity() {
         pieChart1 = findViewById(R.id.idPieChart1)
 
 
+        changDataMemory(FomatDouble(getUsedRamMemorySize()), FomatDouble(getFreeRamMemorySize()))
 
-        changDataMemory(FomatDouble(getUsedMemorySize()), FomatDouble(getFreeMemorySize()))
 
+        btnMemory!!.setBackgroundColor(Color.parseColor("#5CA3DE"))
+        btnMemory!!.setTextColor(Color.parseColor("#FFFFFF"))
+
+        btnStogre!!.setBackgroundColor(Color.parseColor("#FFFFFF"))
+        btnStogre!!.setTextColor(Color.parseColor("#5CA3DE"))
+
+        btnMemory!!.isEnabled = false
+        btnStogre!!.isEnabled = true
 
         btnMemory!!.setOnClickListener(object : View.OnClickListener{
             override fun onClick(v: View?) {
                // btnMemory!!.setBackgroundColor()
+                btnMemory!!.isEnabled = false
+                btnStogre!!.isEnabled = true
+
+                btnMemory!!.setBackgroundColor(Color.parseColor("#5CA3DE"))
+                btnMemory!!.setTextColor(Color.parseColor("#FFFFFF"))
+
+                btnStogre!!.setBackgroundColor(Color.parseColor("#FFFFFF"))
+                btnStogre!!.setTextColor(Color.parseColor("#5CA3DE"))
 
                 layoutMemory!!.visibility = View.VISIBLE
                 layoutStogre!!.visibility = View.GONE
 
-                txtUseMemory!!.setText(FomatDouble(getUsedRamMemorySize()))
-                txtFreeMemory!!.setText(FomatDouble(getFreeRamMemorySize()))
+                txtUseMemory!!.setText(FomatDouble(getUsedRamMemorySize()) + " GB")
+                txtFreeMemory!!.setText(FomatDouble(getFreeRamMemorySize()) + " GB")
             }
         })
 
         btnStogre!!.setOnClickListener(object : View.OnClickListener{
             override fun onClick(v: View?) {
+
+                btnMemory!!.isEnabled = true
+                btnStogre!!.isEnabled = false
+
+                btnStogre!!.setBackgroundColor(Color.parseColor("#5CA3DE"))
+                btnStogre!!.setTextColor(Color.parseColor("#FFFFFF"))
+
+                btnMemory!!.setBackgroundColor(Color.parseColor("#FFFFFF"))
+                btnMemory!!.setTextColor(Color.parseColor("#5CA3DE"))
+
                 layoutMemory!!.visibility = View.GONE
                 layoutStogre!!.visibility = View.VISIBLE
 
@@ -104,6 +135,7 @@ class ActivityDeviceAnalyze : AppCompatActivity() {
                 var freeMemory : String = FomatDouble(getFreeMemorySize())
 
                 changDataStore(usedMemory, freeMemory)
+                //changDataStore(getAvailableInternalMemorySize().toString(), getTotalInternalMemorySize().toString())
             }
         })
 
@@ -133,6 +165,8 @@ class ActivityDeviceAnalyze : AppCompatActivity() {
 
         yValues.add(PieEntry(usedMemory.toFloat(), "Used disk"))
         yValues.add(PieEntry(freeMemory.toFloat(), "Free disk"))
+
+        pieChart!!.getLegend().setTextColor(Color.WHITE);
 
 
         var dataSet : PieDataSet = PieDataSet(yValues, "")
@@ -173,8 +207,10 @@ class ActivityDeviceAnalyze : AppCompatActivity() {
 
         var yValues : ArrayList<PieEntry> = ArrayList<PieEntry>()
 
-        yValues.add(PieEntry(use.toFloat(), "Used disk"))
-        yValues.add(PieEntry(free.toFloat(), "Free disk"))
+        yValues.add(PieEntry(use.toFloat(), "Used memory"))
+        yValues.add(PieEntry(free.toFloat(), "Free memory"))
+
+        pieChart1!!.getLegend().setTextColor(Color.WHITE)   // change text color for label
 
 
         var dataSet : PieDataSet = PieDataSet(yValues, "")
@@ -213,6 +249,7 @@ class ActivityDeviceAnalyze : AppCompatActivity() {
         }
 
         return usedSize / Gb
+        //return totalSize / Gb
     }
 
     fun getFreeMemorySize() : Double{
@@ -227,6 +264,31 @@ class ActivityDeviceAnalyze : AppCompatActivity() {
         }
 
         return freeSize / Gb
+    }
+
+
+    fun getAvailableInternalMemorySize(): Double {
+        val path = Environment.getDataDirectory()
+        val stat = StatFs(path.path)
+        val blockSize = stat.blockSize.toDouble()
+        val availableBlocks = stat.availableBlocks.toDouble()
+        return availableBlocks * blockSize
+    }
+
+    fun getInformation() : Double{
+        val mi = ActivityManager.MemoryInfo()
+        val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        activityManager.getMemoryInfo(mi)
+        val availableMegs = mi.availMem / 1048576L
+        return availableMegs.toDouble()
+    }
+
+    fun getTotalInternalMemorySize(): Double {
+        val path = Environment.getDataDirectory()
+        val stat = StatFs(path.path)
+        val blockSize = stat.blockSize.toLong().toDouble()
+        val totalBlocks = stat.blockCount.toDouble()
+        return totalBlocks * blockSize
     }
 
 

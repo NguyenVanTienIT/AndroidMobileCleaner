@@ -241,11 +241,6 @@ class ActivityDetailContacts : AppCompatActivity() {
             })
         }
 
-        /* fun onSelectedItem(holder: ContactDetailHolder, index : Int){
-            var contacts : Contacts = listContactAdapter!![index]
-            holder!!.bind(contacts)
-            holder!!.line!!.setBackgroundColor(ContextCompat.getColor(applicationContext, R.color.item))
-        }*/
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ContactDetailHolder {
             var layoutInflater: LayoutInflater = LayoutInflater.from(applicationContext)
@@ -270,7 +265,7 @@ class ActivityDetailContacts : AppCompatActivity() {
                             val uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, lookupKey)
 
                             ctx.getContentResolver().delete(uri, cur.getString(cur.getColumnIndex(PhoneLookup.DATA_ID)) + "=?", value)
-                            //Toast.makeText(applicationContext, "Đã xóa được " + lookupKey + " = " + value[0].toString(), Toast.LENGTH_SHORT).show()
+
                             return true
 
                         }

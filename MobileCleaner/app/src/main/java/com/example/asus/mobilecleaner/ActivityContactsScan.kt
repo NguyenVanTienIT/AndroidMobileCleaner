@@ -28,7 +28,6 @@ class ActivityContactsScan : AbsRuntimePermission() {
     var adapter : ContactAdapter? = null
     var listContact :  ArrayList<Contacts>? = null
     var listTam : ArrayList<Contacts>?  = null
-    //var btnDelete : Button?= null
     companion object {
         private val REQUEST_PERMISSION = 10
         private var check = false
@@ -44,7 +43,7 @@ class ActivityContactsScan : AbsRuntimePermission() {
         setContentView(R.layout.activity_contacts_scan)
 
         listRecycler = findViewById(R.id.list_contacts)
-        //btnDelete = findViewById(R.id.delete_contacts)
+
 
         listRecycler?.layoutManager = LinearLayoutManager(applicationContext)
         val itemDecoration = DividerItemDecoration(applicationContext, LinearLayoutManager(applicationContext).orientation)
@@ -53,9 +52,6 @@ class ActivityContactsScan : AbsRuntimePermission() {
         listRecycler!!.addItemDecoration(itemDecoration)
 
         listContact = ArrayList()
-
-       /* requestAppPermissions(arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.WRITE_CONTACTS),
-                R.string.msg, REQUEST_PERMISSION)*/
 
         requestAppPermissions(arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.INTERNET),
                 R.string.msg, REQUEST_PERMISSION)

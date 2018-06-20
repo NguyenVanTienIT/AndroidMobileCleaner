@@ -1,6 +1,7 @@
 package com.example.asus.mobilecleaner
 
 import android.Manifest
+import android.graphics.Color
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.design.widget.NavigationView
@@ -41,7 +42,15 @@ class MainActivity :  NavigationView.OnNavigationItemSelectedListener, AbsRuntim
 
         val toggle = ActionBarDrawerToggle(this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         drawer_layout.addDrawerListener(toggle)
+
         toggle.syncState()
+
+        /*if(FragmentHome.status == true)
+            toolbar.setBackgroundColor(Color.parseColor("#0C2C43"))
+        else{
+            toolbar.setBackgroundColor(Color.parseColor("#0C2C43"))
+        }
+*/
         nav_view.setNavigationItemSelectedListener(this)
 
     }
