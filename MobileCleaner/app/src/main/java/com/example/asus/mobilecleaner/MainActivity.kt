@@ -1,6 +1,8 @@
 package com.example.asus.mobilecleaner
 
 import android.Manifest
+import android.app.Activity
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.support.design.widget.Snackbar
@@ -14,6 +16,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import android.view.View.SYSTEM_UI_FLAG_FULLSCREEN
 import android.widget.Button
+import com.example.asus.mobilecleaner.R.id.toolbar
 import kotlinx.android.synthetic.main.fragment_home.*
 
 
@@ -23,6 +26,9 @@ class MainActivity :  NavigationView.OnNavigationItemSelectedListener, AbsRuntim
     var btnMenu : Button? = null
     companion object {
         private val REQUEST_PERMISSION = 10
+
+
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,15 +51,15 @@ class MainActivity :  NavigationView.OnNavigationItemSelectedListener, AbsRuntim
 
         toggle.syncState()
 
-        /*if(FragmentHome.status == true)
+       /* if(FragmentHome.status == true)
             toolbar.setBackgroundColor(Color.parseColor("#0C2C43"))
         else{
             toolbar.setBackgroundColor(Color.parseColor("#0C2C43"))
-        }
-*/
+        }*/
         nav_view.setNavigationItemSelectedListener(this)
 
     }
+
 
     override fun onPermissionsGranted(requestCode: Int) {
 

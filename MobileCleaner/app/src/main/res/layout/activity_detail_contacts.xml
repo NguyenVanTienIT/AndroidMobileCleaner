@@ -5,7 +5,10 @@
     android:layout_width="match_parent"
     android:orientation="vertical"
     >
-
+<RelativeLayout
+    android:visibility="visible"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -24,5 +27,6 @@
         android:textAllCaps="false"
         android:background="#FF0040"
         android:id="@+id/btn_delete"/>
+</RelativeLayout>
 
 </RelativeLayout>

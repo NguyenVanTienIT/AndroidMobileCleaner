@@ -13,6 +13,7 @@ import android.provider.ContactsContract
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentTransaction
+import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -70,11 +71,14 @@ class FragmentHome : Fragment(), Animation.AnimationListener{
         var open : Boolean = false
         var trans : Boolean = false
 
+        var view2 : View? = null
+
 
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         var view : View = inflater.inflate(R.layout.fragment_home, container, false)
+       // view2 = inflater.inflate(R.layout.app_bar_main, container, false)
         return view
     }
 
@@ -89,6 +93,11 @@ class FragmentHome : Fragment(), Animation.AnimationListener{
         iconNotice = view.findViewById(R.id.icon_notice)
 
         //btnMenu = view.findViewById(R.id.btn_menu)
+
+
+        //val toolbar = activity!!.findViewById<View>(R.id.toolbar) as Toolbar
+        //var activity = getActivity();
+        //var toolbar : Toolbar = view2!!.findViewById(R.id.toolbar)
 
 
 

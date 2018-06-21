@@ -24,6 +24,7 @@ import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
+import java.io.File
 import java.util.ArrayList
 
 
@@ -131,14 +132,42 @@ class ActivityDeviceAnalyze : AppCompatActivity() {
                 layoutMemory!!.visibility = View.GONE
                 layoutStogre!!.visibility = View.VISIBLE
 
-                var usedMemory : String = FomatDouble(getUsedMemorySize())
-                var freeMemory : String = FomatDouble(getFreeMemorySize())
+                var usedMemory : String = FomatDouble( checkTotal()!! - getAvailableInternalMemorySize().toDouble()/ GB)
+                var freeMemory : String = FomatDouble(getAvailableInternalMemorySize().toDouble()/ GB)
 
                 changDataStore(usedMemory, freeMemory)
-                //changDataStore(getAvailableInternalMemorySize().toString(), getTotalInternalMemorySize().toString())
+
             }
         })
 
+    }
+
+
+    fun checkTotal() : Int{
+            var i : Int = 3
+            var total : Int = 0
+        while(true){
+
+            if(getTotalInternalMemorySize().toDouble()/ GB > Pow(2 , i)){
+                total = Pow(2 , i)
+                ++i
+                continue
+            }
+            total = Pow(2 , i)
+          break
+        }
+        return  total
+    }
+
+    fun Pow(x : Int, y : Int) : Int{
+        var i = y
+        var value = x
+        while(true){
+            if(i == 1) break
+            value *= x
+            --i
+        }
+        return value
     }
 
 
@@ -232,6 +261,16 @@ class ActivityDeviceAnalyze : AppCompatActivity() {
 
 
 
+    fun getInfor() : Long{
+        val mi = ActivityManager.MemoryInfo()
+        val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        activityManager.getMemoryInfo(mi)
+        val availableMegs = mi.availMem / 1048576L
+
+        return availableMegs
+    }
+
+
 
     fun getUsedMemorySize(): Double {
 
@@ -267,27 +306,19 @@ class ActivityDeviceAnalyze : AppCompatActivity() {
     }
 
 
-    fun getAvailableInternalMemorySize(): Double {
+    fun getAvailableInternalMemorySize(): Long {
         val path = Environment.getDataDirectory()
         val stat = StatFs(path.path)
-        val blockSize = stat.blockSize.toDouble()
-        val availableBlocks = stat.availableBlocks.toDouble()
+        val blockSize = stat.blockSize.toLong()
+        val availableBlocks = stat.availableBlocks.toLong()
         return availableBlocks * blockSize
     }
 
-    fun getInformation() : Double{
-        val mi = ActivityManager.MemoryInfo()
-        val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-        activityManager.getMemoryInfo(mi)
-        val availableMegs = mi.availMem / 1048576L
-        return availableMegs.toDouble()
-    }
-
-    fun getTotalInternalMemorySize(): Double {
+    fun getTotalInternalMemorySize(): Long {
         val path = Environment.getDataDirectory()
         val stat = StatFs(path.path)
-        val blockSize = stat.blockSize.toLong().toDouble()
-        val totalBlocks = stat.blockCount.toDouble()
+        val blockSize = stat.blockSize.toLong()
+        val totalBlocks = stat.blockCount.toLong()
         return totalBlocks * blockSize
     }
 
