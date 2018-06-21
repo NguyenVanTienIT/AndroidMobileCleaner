@@ -47,6 +47,7 @@ class ActivityBackup : AbsRuntimePermission() {
     var historyAdapter : BackupAdapter?  = null
 
 
+
     val sdf = SimpleDateFormat("dd-MM-yyyy HH:mm:ss")
 
 
@@ -189,7 +190,7 @@ class ActivityBackup : AbsRuntimePermission() {
                 out.close()
 
                 FileRecent(timeCreat)
-                listHistory?.add(0, BackupContacts(listContacts.size, timeCreat, nameFile))
+                listHistory?.add(0, BackupContacts(listContacts.size, timeCreat, nameFile+".VCF"))
                 historyAdapter!!.notifyDataSetChanged()
                 btnBackup!!.isEnabled = true
             }
@@ -310,9 +311,16 @@ class ActivityBackup : AbsRuntimePermission() {
             txtTimebackup!!.setText(backupContacts.timeBackup)
         }
 
+       /* fun setItemClickListener(itemClickListener : ItemClickListener) {
+            itemClickListener = itemClickListener
+        }*/
+
         override fun onClick(v: View?) {
+
+            //itemClickListener?.onClick(v!!, adapterPosition, false)
             var path : String = Environment.getExternalStorageDirectory().toString() + nameStogre + "/"+ newBackupContact!!.urlShare
             ShareFile(path)
+            //Toast.makeText(applicationContext, "Clicked", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -348,6 +356,7 @@ class ActivityBackup : AbsRuntimePermission() {
             var backupContacts : BackupContacts = listBackupAdapter!![position]
 
             holder!!.bind(backupContacts)
+
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BackupHolder {
