@@ -29,6 +29,7 @@ import android.graphics.BitmapFactory
 import android.os.Build
 import android.support.annotation.RequiresApi
 import android.support.v4.content.FileProvider
+import kotlinx.android.synthetic.main.item_history_backup.*
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Path
@@ -54,6 +55,7 @@ class ActivityBackup : AbsRuntimePermission() {
     companion object {
         private val REQUEST_PERMISSION = 10
         val nameStogre : String = "/MobileCleaner"
+        var row_index : Int? = null
     }
 
 
@@ -195,7 +197,7 @@ class ActivityBackup : AbsRuntimePermission() {
                 btnBackup!!.isEnabled = true
             }
             catch (e : Exception){
-                Toast.makeText(applicationContext, "Plese allow pessminsion", Toast.LENGTH_SHORT).show()
+                Toast.makeText(applicationContext, "Please allow pessminsion", Toast.LENGTH_SHORT).show()
                 btnBackup!!.isEnabled = true
             }
     }
@@ -266,7 +268,7 @@ class ActivityBackup : AbsRuntimePermission() {
                         var num = data.substring(0, i)
                         var time: String = data.substring(i + 1)
 
-                        listHistory?.add(BackupContacts(num.toInt(), time, nameFile))
+                        listHistory?.add(BackupContacts(num.toInt(), time, nameFile.substring(0, nameFile.lastIndexOf("."))+".VCF"))
                     }
                     catch (e : Exception){
                         Toast.makeText(applicationContext, "Xảy ra lỗi ở đây", Toast.LENGTH_SHORT).show()
@@ -297,10 +299,12 @@ class ActivityBackup : AbsRuntimePermission() {
         var txtNumContacts : TextView?= null
         var txtTimebackup : TextView? = null
         var newBackupContact : BackupContacts? = null
+        var line_history: RelativeLayout? = null
 
         init {
             txtNumContacts = itemView.findViewById(R.id.count_contacts)
             txtTimebackup = itemView.findViewById(R.id.history)
+            line_history = itemView.findViewById(R.id.line_history)
 
             itemView.setOnClickListener(this)
         }
@@ -311,16 +315,10 @@ class ActivityBackup : AbsRuntimePermission() {
             txtTimebackup!!.setText(backupContacts.timeBackup)
         }
 
-       /* fun setItemClickListener(itemClickListener : ItemClickListener) {
-            itemClickListener = itemClickListener
-        }*/
 
         override fun onClick(v: View?) {
-
-            //itemClickListener?.onClick(v!!, adapterPosition, false)
-            var path : String = Environment.getExternalStorageDirectory().toString() + nameStogre + "/"+ newBackupContact!!.urlShare
-            ShareFile(path)
-            //Toast.makeText(applicationContext, "Clicked", Toast.LENGTH_SHORT).show()
+            /*var path : String = Environment.getExternalStorageDirectory().toString() + nameStogre + "/"+ newBackupContact!!.urlShare
+            ShareFile(path)*/
         }
     }
 
@@ -352,10 +350,28 @@ class ActivityBackup : AbsRuntimePermission() {
             return listBackupAdapter!!.size
         }
 
+
+
         override fun onBindViewHolder(holder: BackupHolder, position: Int) {
             var backupContacts : BackupContacts = listBackupAdapter!![position]
 
             holder!!.bind(backupContacts)
+
+
+            if (row_index == position) {
+                holder!!.line_history!!.setBackgroundColor(ContextCompat.getColor(applicationContext, R.color.colorAccent))
+            } else {
+                holder!!.line_history!!.setBackgroundColor(ContextCompat.getColor(applicationContext, R.color.item))
+            }
+
+            holder.line_history!!.setOnClickListener(object : View.OnClickListener {
+                override fun onClick(v: View?) {
+                    row_index = position
+                    var path : String = Environment.getExternalStorageDirectory().toString() + nameStogre + "/"+ listBackupAdapter!![position]!!.urlShare
+                    ShareFile(path)
+                    notifyDataSetChanged()
+                }
+            })
 
         }
 
