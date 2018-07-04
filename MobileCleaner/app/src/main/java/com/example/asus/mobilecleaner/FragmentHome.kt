@@ -148,7 +148,7 @@ class FragmentHome : Fragment(), Animation.AnimationListener{
                 input.close()
                 r.close()
 
-                if(checkDuplicateContacts()){
+                if(!checkDuplicateContacts()){
                     status = true
                     fram!!.setBackgroundColor(Color.parseColor("#0C2C43"))
                     iconQuickScan!!.setImageResource(R.drawable.dash_icn_green3)
@@ -160,15 +160,16 @@ class FragmentHome : Fragment(), Animation.AnimationListener{
                     status = false
                     fram!!.setBackgroundColor(Color.parseColor("#430C0C"))
                     iconQuickScan!!.setImageResource(R.drawable.ic3)
-                    statusQuickScan!!.setText("Not ready")
+                    statusQuickScan!!.setText(""+getDuplicateContacts() + " Duplicate")
                     statusQuickScan!!.setTextColor(Color.parseColor("#F52424"))
                     textMassage!!.setText("Your device is not ready")
                 }
 
+                iconFullScan!!.setImageResource(R.drawable.dash_icn_green3)
             }
             else {
                 status = false
-                if(checkDuplicateContacts()){
+                if(!checkDuplicateContacts()){
                     fram!!.setBackgroundColor(Color.parseColor("#430C0C"))
                     iconQuickScan!!.setImageResource(R.drawable.dash_icn_green3)
                     statusQuickScan!!.setText("Ready")
@@ -179,11 +180,12 @@ class FragmentHome : Fragment(), Animation.AnimationListener{
                     status = false
                     fram!!.setBackgroundColor(Color.parseColor("#430C0C"))
                     iconQuickScan!!.setImageResource(R.drawable.ic3)
-                    statusQuickScan!!.setText("Not ready")
+                    statusQuickScan!!.setText(""+getDuplicateContacts() + " Duplicate")
                     statusQuickScan!!.setTextColor(Color.parseColor("#F52424"))
                     textMassage!!.setText("Your device is not ready")
                 }
                 statusFullScan!!.setText("Not ready")
+                iconFullScan!!.setImageResource(R.drawable.ic3)
 
             }
             open = true
@@ -208,7 +210,7 @@ class FragmentHome : Fragment(), Animation.AnimationListener{
 
         itemScan!!.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
-                Toast.makeText(activity, "Scanning", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(activity, "Scanning", Toast.LENGTH_SHORT).show()
                 var intent1 : Intent = Intent(activity, ActivityContactsScan::class.java)
                 startActivity(intent1)
             }
@@ -330,6 +332,36 @@ class FragmentHome : Fragment(), Animation.AnimationListener{
         return false
     }
 
+    private fun getDuplicateContacts() : Int{
+        var listContact : ArrayList<Contacts>? = null
+        var listTam : ArrayList<Contacts>? = null
+
+
+        listContact = getContactList()
+        listTam  = ArrayList()
+
+        for(contacts1 : Contacts in listContact!!){
+            var count = 0;
+            for(contacts2 : Contacts in listContact!!){
+                if(contacts1.numberPhone == contacts2.numberPhone && count == 0 && contacts1.numberPhone != "-1"){
+                    ++ count
+                }
+                else if (contacts1.numberPhone == contacts2.numberPhone && count != 0 && contacts1.numberPhone != "-1"){
+                    contacts2.numberPhone = "-1"
+                    ++ count
+                    contacts1.numberCount = count
+                }
+            }
+            if (count > 1){
+                listTam?.add(contacts1)
+            }
+        }
+
+        if(listTam!!.size > 0) return listTam!!.size   // nếu có duplicate thì false
+
+        return 0
+    }
+
     override fun onResume() {
         super.onResume()
         try {
@@ -340,11 +372,11 @@ class FragmentHome : Fragment(), Animation.AnimationListener{
                 val input = FileInputStream(fileRecent)
                 val r = BufferedReader(InputStreamReader(input, StandardCharsets.UTF_8))
                 var data: String = r.readLine()
-                statusFullScan!!.setText("Lastest backup at " + data)
+                    statusFullScan!!.setText("Lastest backup at " + data)
 
                 input.close()
                 r.close()
-                if(checkDuplicateContacts()){
+                if(!checkDuplicateContacts()){
                     status = true
                     fram!!.setBackgroundColor(Color.parseColor("#0C2C43"))
                     iconQuickScan!!.setImageResource(R.drawable.dash_icn_green3)
@@ -356,13 +388,15 @@ class FragmentHome : Fragment(), Animation.AnimationListener{
                     status = false
                     fram!!.setBackgroundColor(Color.parseColor("#430C0C"))
                     iconQuickScan!!.setImageResource(R.drawable.ic3)
-                    statusQuickScan!!.setText("Not ready")
+                    statusQuickScan!!.setText(""+getDuplicateContacts() + " Duplicate")
                     statusQuickScan!!.setTextColor(Color.parseColor("#F52424"))
                     textMassage!!.setText("Your device is not ready")
                 }
+                iconFullScan!!.setImageResource(R.drawable.dash_icn_green3)
+
             } else {
                 statusFullScan!!.setText("Not ready")
-                if(checkDuplicateContacts()){
+                if(!checkDuplicateContacts()){
                     status = false
                     fram!!.setBackgroundColor(Color.parseColor("#430C0C"))
                     iconQuickScan!!.setImageResource(R.drawable.dash_icn_green3)
@@ -374,10 +408,12 @@ class FragmentHome : Fragment(), Animation.AnimationListener{
                     status = false
                     fram!!.setBackgroundColor(Color.parseColor("#430C0C"))
                     iconQuickScan!!.setImageResource(R.drawable.ic3)
-                    statusQuickScan!!.setText("Not ready")
+                    statusQuickScan!!.setText(""+getDuplicateContacts() + " Duplicate")
                     statusQuickScan!!.setTextColor(Color.parseColor("#F52424"))
                     textMassage!!.setText("Your device is not ready")
                 }
+                statusFullScan!!.setText("Not ready")
+                iconFullScan!!.setImageResource(R.drawable.ic3)
             }
             open = true
         }catch (e : Exception){

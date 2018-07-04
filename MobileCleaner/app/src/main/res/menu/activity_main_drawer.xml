@@ -1,22 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:showIn="navigation_view">
-
+    <group
+    android:id="@+id/item1">
     <item
         android:title="Feedback"
         android:id="@+id/feed_back"
         android:icon="@drawable/ic_feedbacl"
         />
+    </group>
+    <group
+        android:id="@+id/item2">
     <item
         android:title="Rate app"
         android:id="@+id/rate_app"
         android:icon="@drawable/ic_rate"
         />
+    </group>
+    <group
+        android:id="@+id/item3">
     <item
-        android:title="Setting"
+        android:title="About Us"
         android:id="@+id/setting"
-        android:icon="@drawable/ic_setting"
+        android:icon="@drawable/ic_about"
         />
-
+    </group>
+<group
+    >
+    <item
+        android:id="@+id/info"
+        android:title="        © 2018 MissKing Limited"
+        />
+</group>
 </menu>

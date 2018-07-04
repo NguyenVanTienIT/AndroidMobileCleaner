@@ -46,6 +46,7 @@ class ActivityBackup : AbsRuntimePermission() {
     var recyclerHistory : RecyclerView? = null
     var listHistory : ArrayList<BackupContacts>? = null
     var historyAdapter : BackupAdapter?  = null
+    var row_index : Int? = null
 
 
 
@@ -55,7 +56,7 @@ class ActivityBackup : AbsRuntimePermission() {
     companion object {
         private val REQUEST_PERMISSION = 10
         val nameStogre : String = "/MobileCleaner"
-        var row_index : Int? = null
+
     }
 
 
@@ -65,6 +66,7 @@ class ActivityBackup : AbsRuntimePermission() {
 
         btnBackup = findViewById(R.id.btn_backup)
         recyclerHistory = findViewById(R.id.list_history)
+
 
         recyclerHistory!!.layoutManager = LinearLayoutManager(applicationContext)
 
@@ -300,11 +302,19 @@ class ActivityBackup : AbsRuntimePermission() {
         var txtTimebackup : TextView? = null
         var newBackupContact : BackupContacts? = null
         var line_history: RelativeLayout? = null
+        var btnShare :  Button? = null
+        var btnDelete : Button? = null
+        var viewLinearLayout : LinearLayout? = null
+        var detail :  ImageView? = null
 
         init {
             txtNumContacts = itemView.findViewById(R.id.count_contacts)
             txtTimebackup = itemView.findViewById(R.id.history)
             line_history = itemView.findViewById(R.id.line_history)
+            btnDelete = itemView.findViewById(R.id.delete)
+            btnShare = itemView.findViewById(R.id.share)
+            viewLinearLayout = itemView.findViewById(R.id.deleteandshare)
+            detail = itemView.findViewById(R.id.detail)
 
             itemView.setOnClickListener(this)
         }
@@ -324,7 +334,7 @@ class ActivityBackup : AbsRuntimePermission() {
 
     fun ShareFile(myFilePath : String){
         var intentShareFile = Intent(Intent.ACTION_SEND);
-        var fileWithinMyDir =  File(myFilePath);
+        var fileWithinMyDir =  File(myFilePath)
 
         if(fileWithinMyDir.exists()) {
         intentShareFile.setType("application/pdf");
@@ -359,20 +369,108 @@ class ActivityBackup : AbsRuntimePermission() {
 
 
             if (row_index == position) {
-                holder!!.line_history!!.setBackgroundColor(ContextCompat.getColor(applicationContext, R.color.colorAccent))
+                holder.detail!!.setImageResource(R.drawable.ic_show_detail)
+                holder.viewLinearLayout!!.visibility = View.VISIBLE
             } else {
-                holder!!.line_history!!.setBackgroundColor(ContextCompat.getColor(applicationContext, R.color.item))
+                holder.detail!!.setImageResource(R.drawable.ic_detail)
+                holder.viewLinearLayout!!.visibility = View.GONE
             }
+
 
             holder.line_history!!.setOnClickListener(object : View.OnClickListener {
                 override fun onClick(v: View?) {
+                    /*row_index = position
+                    var path : String = Environment.getExternalStorageDirectory().toString() + nameStogre + "/"+ listBackupAdapter!![position]!!.urlShare
+                    ShareFile(path)
+                    notifyDataSetChanged()*/
                     row_index = position
+                    if(holder.viewLinearLayout!!.visibility == View.GONE){
+                        holder.detail!!.setImageResource(R.drawable.ic_show_detail)
+                        holder.viewLinearLayout!!.visibility = View.VISIBLE
+
+                    }
+                    else{
+                        holder.detail!!.setImageResource(R.drawable.ic_detail)
+                        holder.viewLinearLayout!!.visibility = View.GONE
+
+                    }
+                    //notifyDataSetChanged()
+                }
+            })
+            holder.detail!!.setOnClickListener(object : View.OnClickListener {
+                override fun onClick(v: View?) {
+                    /*row_index = position
+                    var path : String = Environment.getExternalStorageDirectory().toString() + nameStogre + "/"+ listBackupAdapter!![position]!!.urlShare
+                    ShareFile(path)
+                    notifyDataSetChanged()*/
+                    row_index = position
+                    if(holder.viewLinearLayout!!.visibility == View.GONE){
+                        holder.detail!!.setImageResource(R.drawable.ic_show_detail)
+                        holder.viewLinearLayout!!.visibility = View.VISIBLE
+
+                    }
+                    else{
+                        holder.detail!!.setImageResource(R.drawable.ic_detail)
+                        holder.viewLinearLayout!!.visibility = View.GONE
+
+                    }
+                    notifyDataSetChanged()
+                }
+            })
+
+            holder.btnShare!!.setOnClickListener(object : View.OnClickListener {
+                override fun onClick(v: View?) {
+                    //row_index = position
                     var path : String = Environment.getExternalStorageDirectory().toString() + nameStogre + "/"+ listBackupAdapter!![position]!!.urlShare
                     ShareFile(path)
                     notifyDataSetChanged()
                 }
             })
+            holder.btnDelete!!.setOnClickListener(object : View.OnClickListener {
+                override fun onClick(v: View?) {
+                    //row_index = position
+                    if(row_index != 0 && listHistory!!.size > 1) {
+                       /* var path: String = Environment.getExternalStorageDirectory().toString() + nameStogre + "/" + listBackupAdapter!![position]!!.urlShare
+                        var fileDelete = File(path);
+                        var filedetaiDelete = File(path.substring(0, path.lastIndexOf(".")) + ".txt")
+                        var checkDelete = fileDelete.delete()
+                        var checkDeleteDetail = filedetaiDelete.delete()
+                        if (checkDelete && checkDeleteDetail) {
+                            listHistory!!.removeAt(row_index!!)
+                            row_index = null
+                            Toast.makeText(applicationContext, "Delete Complate", Toast.LENGTH_SHORT).show()
+                        }*/
+                        deleteFile()
+                        notifyDataSetChanged()
+                    }
+                    else if(listHistory!!.size > 1 && row_index == 0){
+                        deleteFile()
+                        notifyDataSetChanged()
+                        FileRecent(listHistory!!.get(0).timeBackup.toString())
+                    }
+                    else{
+                        deleteFile()
+                        notifyDataSetChanged()
+                        var fileRecent = File(Environment.getExternalStorageDirectory().toString() + nameStogre + "/" + "recent.txt")
+                        fileRecent.delete()
+                    }
 
+                }
+            })
+
+        }
+
+        fun deleteFile(){
+            var path: String = Environment.getExternalStorageDirectory().toString() + nameStogre + "/" + listBackupAdapter!![row_index!!]!!.urlShare
+            var fileDelete = File(path);
+            var filedetaiDelete = File(path.substring(0, path.lastIndexOf(".")) + ".txt")
+            var checkDelete = fileDelete.delete()
+            var checkDeleteDetail = filedetaiDelete.delete()
+            if (checkDelete && checkDeleteDetail) {
+                listHistory!!.removeAt(row_index!!)
+                row_index = null
+                Toast.makeText(applicationContext, "Delete Complate", Toast.LENGTH_SHORT).show()
+            }
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BackupHolder {

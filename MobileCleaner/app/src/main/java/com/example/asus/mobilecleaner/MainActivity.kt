@@ -2,6 +2,7 @@ package com.example.asus.mobilecleaner
 
 import android.Manifest
 import android.app.Activity
+import android.content.ClipData
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
@@ -18,6 +19,8 @@ import android.view.View.SYSTEM_UI_FLAG_FULLSCREEN
 import android.widget.Button
 import com.example.asus.mobilecleaner.R.id.toolbar
 import kotlinx.android.synthetic.main.fragment_home.*
+import android.content.Intent
+import android.net.Uri
 
 
 class MainActivity :  NavigationView.OnNavigationItemSelectedListener, AbsRuntimePermission() {
@@ -26,6 +29,8 @@ class MainActivity :  NavigationView.OnNavigationItemSelectedListener, AbsRuntim
     var btnMenu : Button? = null
     companion object {
         private val REQUEST_PERMISSION = 10
+        private val MY_REQUEST_CODE = 1
+        var send = false
 
 
 
@@ -91,21 +96,47 @@ class MainActivity :  NavigationView.OnNavigationItemSelectedListener, AbsRuntim
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        if(send){
+            Toast.makeText(applicationContext, "Send complete", Toast.LENGTH_SHORT).show()
+            send = false
+        }
+    }
+
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
         when (item.itemId) {
             R.id.feed_back -> {
-                Toast.makeText(applicationContext, "feedback selected", Toast.LENGTH_SHORT).show()
+               // Toast.makeText(applicationContext, "feedback selected", Toast.LENGTH_SHORT).show()
+                val email = Intent(Intent.ACTION_SEND)
+                email.putExtra(Intent.EXTRA_EMAIL, arrayOf("contact@misskinglimited.com"))
+                email.putExtra(Intent.EXTRA_SUBJECT, "Contact Us")
+                email.putExtra(Intent.EXTRA_TEXT, "sent a message using the contact us ")
+
+                email.type = "message/rfc822"
+                startActivityForResult(Intent.createChooser(email, "Choose an Email client:"), 1);
+                send = true
             }
             R.id.rate_app-> {
-                Toast.makeText(applicationContext, "Rate app selected", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(applicationContext, "Rate app selected", Toast.LENGTH_SHORT).show()
+                val appPackageName = packageName // getPackageName() from Context or Activity object
+                try {
+                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$appPackageName")))
+                } catch (anfe: android.content.ActivityNotFoundException) {
+                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=$appPackageName")))
+                }
+
             }
             R.id.setting -> {
-                Toast.makeText(applicationContext, "Setting selected", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(applicationContext, "Setting selected", Toast.LENGTH_SHORT).show()
+                val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("http://misskinglimited.com"))
+                startActivity(browserIntent)
             }
         }
 
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
     }
+
 }
